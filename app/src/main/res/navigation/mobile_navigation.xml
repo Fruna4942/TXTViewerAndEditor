@@ -3,23 +3,23 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/mobile_navigation"
-    app:startDestination="@+id/nav_home">
+    app:startDestination="@+id/nav_view_and_edit">
 
     <fragment
-        android:id="@+id/nav_home"
-        android:name="com.toyproject.txtviewerandeditor.ui.home.HomeFragment"
-        android:label="@string/menu_home"
-        tools:layout="@layout/fragment_home" />
+        android:id="@+id/nav_view_and_edit"
+        android:name="com.toyproject.txtviewerandeditor.ui.view_and_edit.ViewAndEditFragment"
+        android:label="@string/menu_view_and_edit"
+        tools:layout="@layout/fragment_view_and_edit" />
 
     <fragment
-        android:id="@+id/nav_gallery"
-        android:name="com.toyproject.txtviewerandeditor.ui.gallery.GalleryFragment"
-        android:label="@string/menu_gallery"
-        tools:layout="@layout/fragment_gallery" />
+        android:id="@+id/nav_file_explore"
+        android:name="com.toyproject.txtviewerandeditor.ui.file_explore.FileExploreFragment"
+        android:label="@string/menu_file_explore"
+        tools:layout="@layout/fragment_file_explore" />
 
     <fragment
-        android:id="@+id/nav_slideshow"
-        android:name="com.toyproject.txtviewerandeditor.ui.slideshow.SlideshowFragment"
-        android:label="@string/menu_slideshow"
-        tools:layout="@layout/fragment_slideshow" />
+        android:id="@+id/nav_setting"
+        android:name="com.toyproject.txtviewerandeditor.ui.setting.SettingFragment"
+        android:label="@string/menu_setting"
+        tools:layout="@layout/fragment_setting" />
 </navigation>

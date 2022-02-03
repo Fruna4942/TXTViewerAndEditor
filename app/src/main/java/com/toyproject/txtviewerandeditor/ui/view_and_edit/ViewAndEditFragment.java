@@ -1,4 +1,4 @@
-package com.toyproject.txtviewerandeditor.ui.home;
+package com.toyproject.txtviewerandeditor.ui.view_and_edit;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -12,24 +12,23 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
-import com.toyproject.txtviewerandeditor.R;
-import com.toyproject.txtviewerandeditor.databinding.FragmentHomeBinding;
+import com.toyproject.txtviewerandeditor.databinding.FragmentViewAndEditBinding;
 
-public class HomeFragment extends Fragment {
+public class ViewAndEditFragment extends Fragment {
 
-    private HomeViewModel homeViewModel;
-    private FragmentHomeBinding binding;
+    private ViewAndEditViewModel viewAndEditViewModel;
+    private FragmentViewAndEditBinding binding;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-        homeViewModel =
-                new ViewModelProvider(this).get(HomeViewModel.class);
+        viewAndEditViewModel =
+                new ViewModelProvider(this).get(ViewAndEditViewModel.class);
 
-        binding = FragmentHomeBinding.inflate(inflater, container, false);
+        binding = FragmentViewAndEditBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
 
         final TextView textView = binding.textHome;
-        homeViewModel.getText().observe(getViewLifecycleOwner(), new Observer<String>() {
+        viewAndEditViewModel.getText().observe(getViewLifecycleOwner(), new Observer<String>() {
             @Override
             public void onChanged(@Nullable String s) {
                 textView.setText(s);

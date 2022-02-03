@@ -1,16 +1,16 @@
-package com.toyproject.txtviewerandeditor.ui.slideshow;
+package com.toyproject.txtviewerandeditor.ui.view_and_edit;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
-public class SlideshowViewModel extends ViewModel {
+public class ViewAndEditViewModel extends ViewModel {
 
     private MutableLiveData<String> mText;
 
-    public SlideshowViewModel() {
+    public ViewAndEditViewModel() {
         mText = new MutableLiveData<>();
-        mText.setValue("This is slideshow fragment");
+        mText.setValue("This is view_and_edit fragment");
     }
 
     public LiveData<String> getText() {
