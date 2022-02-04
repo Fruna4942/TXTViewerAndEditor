@@ -6,12 +6,14 @@ import android.os.Environment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -52,7 +54,7 @@ public class FileExploreFragment extends Fragment {
         file = new File(rootPath);
         ArrayList<RecyclerViewItem> recyclerViewItemArrayList = new ArrayList<>();
         if (file != null) {
-            File fileList[] = file.listFiles();
+            File[] fileList = file.listFiles();
 
             for (int i = 0; i < fileList.length; i++) {
                 // TODO: 2022-02-04 directory, file 구분해서 drawable 지정 
@@ -61,9 +63,19 @@ public class FileExploreFragment extends Fragment {
             }
         }
 
-        recyclerView.setLayoutManager(new LinearLayoutManager(this.getContext()));
+        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         RecyclerViewAdapter recyclerViewAdapter = new RecyclerViewAdapter(recyclerViewItemArrayList);
         recyclerView.setAdapter(recyclerViewAdapter);
+        recyclerView.addItemDecoration(new DividerItemDecoration(getContext(), 1));
+        recyclerViewAdapter.setOnItemClickListener(new RecyclerViewAdapter.OnItemClickListener() {
+            @Override
+            public void onItemClick(View view, int pos) {
+                //temp
+                Toast toast = Toast.makeText(getContext(), String.format("item pos : %d", pos), Toast.LENGTH_SHORT);
+                toast.show();
+                // TODO: 2022-02-05 디렉토리 이동 기능 구현 필요 
+            }
+        });
 
 
         return root;

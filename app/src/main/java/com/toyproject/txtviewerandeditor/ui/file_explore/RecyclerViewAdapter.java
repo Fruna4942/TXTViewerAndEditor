@@ -15,11 +15,22 @@ import com.toyproject.txtviewerandeditor.R;
 
 import java.util.ArrayList;
 
-// TODO: 2022-02-04 viewHolder 클릭 이벤트 구현 
 public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapter.ViewHolder> {
 
-    private ArrayList<RecyclerViewItem> dataList;
+    public interface OnItemClickListener {
+        void onItemClick(View view, int pos);
+    }
 
+    private ArrayList<RecyclerViewItem> dataList;
+    private OnItemClickListener onItemClickListener;
+
+    public RecyclerViewAdapter(ArrayList<RecyclerViewItem> dataList) {
+        this.dataList = dataList;
+    }
+
+    public void setOnItemClickListener(OnItemClickListener onItemClickListener) {
+        this.onItemClickListener = onItemClickListener;
+    }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
         ImageView imageView;
@@ -30,11 +41,16 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 
             imageView = view.findViewById(R.id.image_view);
             textView = view.findViewById(R.id.text_view);
-        }
-    }
 
-    public RecyclerViewAdapter(ArrayList<RecyclerViewItem> dataList) {
-        this.dataList = dataList;
+            view.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    if (onItemClickListener != null) {
+                        onItemClickListener.onItemClick(view, getAdapterPosition());
+                    }
+                }
+            });
+        }
     }
 
     @NonNull
