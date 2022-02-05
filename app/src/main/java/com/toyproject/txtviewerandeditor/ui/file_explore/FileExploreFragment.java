@@ -1,11 +1,14 @@
 package com.toyproject.txtviewerandeditor.ui.file_explore;
 
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.MimeTypeMap;
+import android.widget.Switch;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -50,16 +53,26 @@ public class FileExploreFragment extends Fragment {
 
          */
 
-        String rootPath = Environment.getExternalStorageDirectory().toString();
+        String rootPath = Environment.getExternalStorageDirectory().getPath();
         file = new File(rootPath);
         ArrayList<RecyclerViewItem> recyclerViewItemArrayList = new ArrayList<>();
         if (file != null) {
             File[] fileList = file.listFiles();
 
             for (int i = 0; i < fileList.length; i++) {
-                // TODO: 2022-02-04 directory, file 구분해서 drawable 지정 
-                RecyclerViewItem recyclerViewItem = new RecyclerViewItem(ContextCompat.getDrawable(getContext(), R.drawable.ic_baseline_folder_24_black), fileList[i].getName());
-                recyclerViewItemArrayList.add(recyclerViewItem);
+                // TODO: 2022-02-04 directory, file 구분해서 drawable 지정
+                File file_i = fileList[i];
+                int drawableId = -1;
+
+                if (file_i.isDirectory())
+                    drawableId = R.drawable.ic_baseline_folder_24_black;
+                else if (MimeTypeMap.getFileExtensionFromUrl(Uri.fromFile(file_i).toString()).equals("txt"))
+                    drawableId = R.drawable.ic_baseline_text_snippet_24_black;
+
+                if (drawableId != -1) {
+                    RecyclerViewItem recyclerViewItem = new RecyclerViewItem(ContextCompat.getDrawable(getContext(), drawableId), fileList[i].getName());
+                    recyclerViewItemArrayList.add(recyclerViewItem);
+                }
             }
         }
 
