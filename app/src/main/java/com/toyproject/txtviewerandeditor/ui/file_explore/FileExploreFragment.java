@@ -25,6 +25,7 @@ import com.toyproject.txtviewerandeditor.databinding.FragmentFileExploreBinding;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class FileExploreFragment extends Fragment {
 
@@ -58,9 +59,10 @@ public class FileExploreFragment extends Fragment {
         ArrayList<RecyclerViewItem> recyclerViewItemArrayList = new ArrayList<>();
         if (file != null) {
             File[] fileList = file.listFiles();
+            if (fileList != null)
+                Arrays.sort(fileList);
 
             for (int i = 0; i < fileList.length; i++) {
-                // TODO: 2022-02-04 directory, file 구분해서 drawable 지정
                 File file_i = fileList[i];
                 int drawableId = -1;
 
@@ -70,7 +72,7 @@ public class FileExploreFragment extends Fragment {
                     drawableId = R.drawable.ic_baseline_text_snippet_24_black;
 
                 if (drawableId != -1) {
-                    RecyclerViewItem recyclerViewItem = new RecyclerViewItem(ContextCompat.getDrawable(getContext(), drawableId), fileList[i].getName());
+                    RecyclerViewItem recyclerViewItem = new RecyclerViewItem(file_i, ContextCompat.getDrawable(getContext(), drawableId));
                     recyclerViewItemArrayList.add(recyclerViewItem);
                 }
             }
@@ -86,7 +88,7 @@ public class FileExploreFragment extends Fragment {
                 //temp
                 Toast toast = Toast.makeText(getContext(), String.format("item pos : %d", pos), Toast.LENGTH_SHORT);
                 toast.show();
-                // TODO: 2022-02-05 디렉토리 이동 기능 구현 필요 
+                // TODO: 2022-02-05 디렉토리 이동 기능 구현 필요
             }
         });
 

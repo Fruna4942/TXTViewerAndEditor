@@ -8,7 +8,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.toyproject.txtviewerandeditor.R;
@@ -40,7 +39,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
             super(view);
 
             imageView = view.findViewById(R.id.image_view);
-            textView = view.findViewById(R.id.text_view);
+            textView = view.findViewById(R.id.text_item_recycler);
 
             view.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -70,7 +69,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         RecyclerViewItem recyclerViewItem = dataList.get(position);
 
         holder.imageView.setImageDrawable(recyclerViewItem.getImageView());
-        holder.textView.setText(recyclerViewItem.getTextView());
+        holder.textView.setText(recyclerViewItem.getFile().getName());
     }
 
     @Override
