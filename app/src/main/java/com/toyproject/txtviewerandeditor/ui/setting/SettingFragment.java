@@ -14,6 +14,8 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.toyproject.txtviewerandeditor.databinding.FragmentSettingBinding;
 
+// TODO: 2022-02-11 배경 및 글자 속성 설정 기능 추가 
+// TODO: 2022-02-11 읽기 및 쓰기 설정 기능 추가 
 public class SettingFragment extends Fragment {
 
     private SettingViewModel settingViewModel;

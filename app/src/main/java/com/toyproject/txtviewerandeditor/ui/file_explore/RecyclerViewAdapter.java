@@ -20,11 +20,26 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         void onItemClick(View view, int pos);
     }
 
-    private ArrayList<RecyclerViewItem> dataList;
+    private String presentPath;
+    private ArrayList<RecyclerViewItem> recyclerViewItemArrayList;
     private OnItemClickListener onItemClickListener;
 
-    public RecyclerViewAdapter(ArrayList<RecyclerViewItem> dataList) {
-        this.dataList = dataList;
+    public RecyclerViewAdapter(String presentPath, ArrayList<RecyclerViewItem> recyclerViewItemArrayList) {
+        this.presentPath = presentPath;
+        this.recyclerViewItemArrayList = recyclerViewItemArrayList;
+    }
+
+    public String getPresentPath() {
+        return presentPath;
+    }
+
+    public ArrayList<RecyclerViewItem> getRecyclerViewItemArrayList() {
+        return recyclerViewItemArrayList;
+    }
+
+    public void changeDirectory(String presentPath, ArrayList<RecyclerViewItem> recyclerViewItemArrayList) {
+        this.presentPath = presentPath;
+        this.recyclerViewItemArrayList = recyclerViewItemArrayList;
     }
 
     public void setOnItemClickListener(OnItemClickListener onItemClickListener) {
@@ -66,7 +81,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 
     @Override
     public void onBindViewHolder(@NonNull RecyclerViewAdapter.ViewHolder holder, int position) {
-        RecyclerViewItem recyclerViewItem = dataList.get(position);
+        RecyclerViewItem recyclerViewItem = recyclerViewItemArrayList.get(position);
 
         holder.imageView.setImageDrawable(recyclerViewItem.getImageView());
         holder.textView.setText(recyclerViewItem.getFile().getName());
@@ -74,6 +89,6 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 
     @Override
     public int getItemCount() {
-        return dataList.size();
+        return recyclerViewItemArrayList.size();
     }
 }

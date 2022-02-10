@@ -15,7 +15,11 @@
         android:id="@+id/nav_file_explore"
         android:name="com.toyproject.txtviewerandeditor.ui.file_explore.FileExploreFragment"
         android:label="@string/menu_file_explore"
-        tools:layout="@layout/fragment_file_explore" />
+        tools:layout="@layout/fragment_file_explore" >
+        <action
+            android:id="@+id/action_nav_file_explore_to_nav_view_and_edit"
+            app:destination="@id/nav_view_and_edit" />
+    </fragment>
 
     <fragment
         android:id="@+id/nav_setting"

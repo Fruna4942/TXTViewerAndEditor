@@ -1,5 +1,6 @@
 package com.toyproject.txtviewerandeditor.ui.file_explore;
 
+import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -7,12 +8,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.MimeTypeMap;
-import android.widget.Toast;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.NavDirections;
+import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -24,12 +27,30 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-public class FileExploreFragment extends Fragment {
+public class FileExploreFragment extends Fragment{
 
     private FileExploreViewModel fileExploreViewModel;
     private FragmentFileExploreBinding binding;
     private RecyclerView recyclerView;
-    private File file;
+    private RecyclerViewAdapter recyclerViewAdapter;
+    private final OnBackPressedCallback onBackPressedCallback = new OnBackPressedCallback(true) {
+        @Override
+        public void handleOnBackPressed() {
+            String presentPath = recyclerViewAdapter.getPresentPath();
+            if (!presentPath.equals(Environment.getExternalStorageDirectory().getPath())) {
+                File file = new File(presentPath);
+                File parentFile = file.getParentFile();
+                presentPath = parentFile.getPath();
+                recyclerViewAdapter.changeDirectory(presentPath, getRecyclerViewItemList(presentPath));
+                recyclerView.setAdapter(recyclerViewAdapter);
+                recyclerView.refreshDrawableState();
+            }
+            else {
+                NavDirections navDirections = FileExploreFragmentDirections.actionNavFileExploreToNavViewAndEdit();
+                Navigation.findNavController(FileExploreFragment.super.getView()).navigate(navDirections);
+            }
+        }
+    };
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -40,22 +61,61 @@ public class FileExploreFragment extends Fragment {
         View root = binding.getRoot();
         recyclerView = binding.recyclerView;
 
-        /*
-        final TextView textView = binding.textGallery;
-        fileExploreViewModel.getText().observe(getViewLifecycleOwner(), new Observer<String>() {
+        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        String presentPath = Environment.getExternalStorageDirectory().getPath();
+        recyclerViewAdapter = new RecyclerViewAdapter(presentPath, getRecyclerViewItemList(presentPath));
+        recyclerView.setAdapter(recyclerViewAdapter);
+        recyclerView.addItemDecoration(new DividerItemDecoration(getContext(), 1));
+
+        recyclerViewAdapter.setOnItemClickListener(new RecyclerViewAdapter.OnItemClickListener() {
             @Override
-            public void onChanged(@Nullable String s) {
-                textView.setText(s);
+            public void onItemClick(View view, int pos) {
+                // TODO: 2022-02-10 txt 파일 열기 구현 필요
+                String presentPath = recyclerViewAdapter.getRecyclerViewItemArrayList().get(pos).getFile().getPath();
+
+                File file = new File(presentPath);
+                if (file.isDirectory()) {
+                    recyclerViewAdapter.changeDirectory(presentPath, getRecyclerViewItemList(presentPath));
+                    recyclerView.setAdapter(recyclerViewAdapter);
+                    recyclerView.refreshDrawableState();
+                } else if (MimeTypeMap.getFileExtensionFromUrl(Uri.fromFile(file).toString()).equals("txt")) {
+                    NavDirections navDirections = FileExploreFragmentDirections.actionNavFileExploreToNavViewAndEdit();
+                    Navigation.findNavController(view).navigate(navDirections);
+                }
             }
         });
 
-         */
 
-        String rootPath = Environment.getExternalStorageDirectory().getPath();
-        file = new File(rootPath);
+        return root;
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        binding = null;
+    }
+
+    @Override
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+
+        onBackPressedCallback.setEnabled(true);
+        requireActivity().getOnBackPressedDispatcher().addCallback(onBackPressedCallback);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+
+        onBackPressedCallback.setEnabled(false);
+    }
+
+    public ArrayList<RecyclerViewItem> getRecyclerViewItemList(String presentPath) {
         ArrayList<RecyclerViewItem> recyclerViewItemArrayList = new ArrayList<>();
+        File file = new File(presentPath);
+        File[] fileList = file.listFiles();
+
         if (file != null) {
-            File[] fileList = file.listFiles();
             if (fileList != null)
                 Arrays.sort(fileList);
 
@@ -75,27 +135,6 @@ public class FileExploreFragment extends Fragment {
             }
         }
 
-        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        RecyclerViewAdapter recyclerViewAdapter = new RecyclerViewAdapter(recyclerViewItemArrayList);
-        recyclerView.setAdapter(recyclerViewAdapter);
-        recyclerView.addItemDecoration(new DividerItemDecoration(getContext(), 1));
-        recyclerViewAdapter.setOnItemClickListener(new RecyclerViewAdapter.OnItemClickListener() {
-            @Override
-            public void onItemClick(View view, int pos) {
-                //temp
-                Toast toast = Toast.makeText(getContext(), String.format("item pos : %d", pos), Toast.LENGTH_SHORT);
-                toast.show();
-                // TODO: 2022-02-05 디렉토리 이동 기능 구현 필요
-            }
-        });
-
-
-        return root;
-    }
-
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        binding = null;
+        return recyclerViewItemArrayList;
     }
 }
