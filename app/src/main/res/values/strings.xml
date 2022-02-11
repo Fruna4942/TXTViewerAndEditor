@@ -7,7 +7,10 @@
     <string name="nav_header_desc">Navigation header</string>
     <string name="action_settings">Settings</string>
 
-    <string name="menu_view_and_edit">View &amp; Edit</string>
-    <string name="menu_file_explore">Find txt files</string>
+    <string name="menu_viewer_and_editor">View &amp; Edit</string>
+    <string name="menu_file_explorer">Find txt files</string>
     <string name="menu_setting">Setting</string>
+
+    <string name="present_file">Present text file</string>
+    <string name="present_file_default_value">Not selected</string>
 </resources>

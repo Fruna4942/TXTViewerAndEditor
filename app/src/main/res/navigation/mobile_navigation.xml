@@ -3,22 +3,22 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/mobile_navigation"
-    app:startDestination="@+id/nav_view_and_edit">
+    app:startDestination="@+id/nav_viewer_and_editor">
 
     <fragment
-        android:id="@+id/nav_view_and_edit"
-        android:name="com.toyproject.txtviewerandeditor.ui.view_and_edit.ViewAndEditFragment"
-        android:label="@string/menu_view_and_edit"
-        tools:layout="@layout/fragment_view_and_edit" />
+        android:id="@+id/nav_viewer_and_editor"
+        android:name="com.toyproject.txtviewerandeditor.ui.viewer_and_editor.ViewerAndEditorFragment"
+        android:label="@string/menu_viewer_and_editor"
+        tools:layout="@layout/fragment_viewer_and_editor" />
 
     <fragment
-        android:id="@+id/nav_file_explore"
-        android:name="com.toyproject.txtviewerandeditor.ui.file_explore.FileExploreFragment"
-        android:label="@string/menu_file_explore"
-        tools:layout="@layout/fragment_file_explore" >
+        android:id="@+id/nav_file_explorer"
+        android:name="com.toyproject.txtviewerandeditor.ui.file_explorer.FileExplorerFragment"
+        android:label="@string/menu_file_explorer"
+        tools:layout="@layout/fragment_file_explorer" >
         <action
-            android:id="@+id/action_nav_file_explore_to_nav_view_and_edit"
-            app:destination="@id/nav_view_and_edit" />
+            android:id="@+id/action_nav_file_explorer_to_nav_view_and_edit"
+            app:destination="@id/nav_viewer_and_editor" />
     </fragment>
 
     <fragment

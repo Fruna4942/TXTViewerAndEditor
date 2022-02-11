@@ -1,18 +1,14 @@
-package com.toyproject.txtviewerandeditor.ui.file_explore;
-
-import android.os.Environment;
+package com.toyproject.txtviewerandeditor.ui.file_explorer;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
-import java.io.File;
-
-public class FileExploreViewModel extends ViewModel {
+public class FileExplorerViewModel extends ViewModel {
 
     private MutableLiveData<String> mText;
 
-    public FileExploreViewModel() {
+    public FileExplorerViewModel() {
         /*
         mText = new MutableLiveData<>();
         mText.setValue("This is file_explore fragment");

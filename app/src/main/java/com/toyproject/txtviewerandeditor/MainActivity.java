@@ -1,7 +1,6 @@
 package com.toyproject.txtviewerandeditor;
 
 import android.Manifest;
-import android.annotation.SuppressLint;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -10,7 +9,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.Settings;
-import android.view.Gravity;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
@@ -19,15 +17,12 @@ import androidx.core.content.ContextCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.navigation.NavController;
-import androidx.navigation.NavDirections;
 import androidx.navigation.Navigation;
-import androidx.navigation.fragment.NavHostFragment;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
 import com.google.android.material.navigation.NavigationView;
 import com.toyproject.txtviewerandeditor.databinding.ActivityMainBinding;
-import com.toyproject.txtviewerandeditor.ui.view_and_edit.ViewAndEditFragment;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -48,7 +43,7 @@ public class MainActivity extends AppCompatActivity {
         // Passing each menu ID as a set of Ids because each
         // menu should be considered as top level destinations.
         mAppBarConfiguration = new AppBarConfiguration.Builder(
-                R.id.nav_view_and_edit, R.id.nav_file_explore, R.id.nav_setting)
+                R.id.nav_viewer_and_editor, R.id.nav_file_explorer, R.id.nav_setting)
                 .setOpenableLayout(drawerLayout)
                 .build();
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_content_main);
@@ -126,8 +121,10 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
                 finishAffinity();
+                /*
                 System.runFinalization();
                 System.exit(0);
+                 */
             }
         });
         builder.setPositiveButton("확인", new DialogInterface.OnClickListener() {
@@ -154,8 +151,10 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
                 finishAffinity();
+                /*
                 System.runFinalization();
                 System.exit(0);
+                 */
             }
         });
         builder.setCancelable(false);

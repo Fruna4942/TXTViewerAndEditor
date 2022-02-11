@@ -1,6 +1,7 @@
-package com.toyproject.txtviewerandeditor.ui.file_explore;
+package com.toyproject.txtviewerandeditor.ui.file_explorer;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -21,16 +22,16 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.toyproject.txtviewerandeditor.R;
-import com.toyproject.txtviewerandeditor.databinding.FragmentFileExploreBinding;
+import com.toyproject.txtviewerandeditor.databinding.FragmentFileExplorerBinding;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-public class FileExploreFragment extends Fragment{
+public class FileExplorerFragment extends Fragment{
 
-    private FileExploreViewModel fileExploreViewModel;
-    private FragmentFileExploreBinding binding;
+    private FileExplorerViewModel fileExplorerViewModel;
+    private FragmentFileExplorerBinding binding;
     private RecyclerView recyclerView;
     private RecyclerViewAdapter recyclerViewAdapter;
     private final OnBackPressedCallback onBackPressedCallback = new OnBackPressedCallback(true) {
@@ -46,18 +47,18 @@ public class FileExploreFragment extends Fragment{
                 recyclerView.refreshDrawableState();
             }
             else {
-                NavDirections navDirections = FileExploreFragmentDirections.actionNavFileExploreToNavViewAndEdit();
-                Navigation.findNavController(FileExploreFragment.super.getView()).navigate(navDirections);
+                NavDirections navDirections = FileExplorerFragmentDirections.actionNavFileExplorerToNavViewAndEdit();
+                Navigation.findNavController(FileExplorerFragment.super.getView()).navigate(navDirections);
             }
         }
     };
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-        fileExploreViewModel =
-                new ViewModelProvider(this).get(FileExploreViewModel.class);
+        fileExplorerViewModel =
+                new ViewModelProvider(this).get(FileExplorerViewModel.class);
 
-        binding = FragmentFileExploreBinding.inflate(inflater, container, false);
+        binding = FragmentFileExplorerBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
         recyclerView = binding.recyclerView;
 
@@ -70,7 +71,6 @@ public class FileExploreFragment extends Fragment{
         recyclerViewAdapter.setOnItemClickListener(new RecyclerViewAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(View view, int pos) {
-                // TODO: 2022-02-10 txt 파일 열기 구현 필요
                 String presentPath = recyclerViewAdapter.getRecyclerViewItemArrayList().get(pos).getFile().getPath();
 
                 File file = new File(presentPath);
@@ -79,7 +79,12 @@ public class FileExploreFragment extends Fragment{
                     recyclerView.setAdapter(recyclerViewAdapter);
                     recyclerView.refreshDrawableState();
                 } else if (MimeTypeMap.getFileExtensionFromUrl(Uri.fromFile(file).toString()).equals("txt")) {
-                    NavDirections navDirections = FileExploreFragmentDirections.actionNavFileExploreToNavViewAndEdit();
+                    SharedPreferences sharedPreferences = getActivity().getPreferences(Context.MODE_PRIVATE);
+                    SharedPreferences.Editor editor = sharedPreferences.edit();
+                    editor.putString(getString(R.string.present_file), file.getPath());
+                    editor.apply();
+
+                    NavDirections navDirections = FileExplorerFragmentDirections.actionNavFileExplorerToNavViewAndEdit();
                     Navigation.findNavController(view).navigate(navDirections);
                 }
             }
@@ -96,8 +101,8 @@ public class FileExploreFragment extends Fragment{
     }
 
     @Override
-    public void onAttach(@NonNull Context context) {
-        super.onAttach(context);
+    public void onResume() {
+        super.onResume();
 
         onBackPressedCallback.setEnabled(true);
         requireActivity().getOnBackPressedDispatcher().addCallback(onBackPressedCallback);
@@ -115,7 +120,7 @@ public class FileExploreFragment extends Fragment{
         File file = new File(presentPath);
         File[] fileList = file.listFiles();
 
-        if (file != null) {
+        if (file.exists()) {
             if (fileList != null)
                 Arrays.sort(fileList);
 

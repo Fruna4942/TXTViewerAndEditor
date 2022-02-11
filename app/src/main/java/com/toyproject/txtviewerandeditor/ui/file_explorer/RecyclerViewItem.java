@@ -1,11 +1,10 @@
-package com.toyproject.txtviewerandeditor.ui.file_explore;
+package com.toyproject.txtviewerandeditor.ui.file_explorer;
 
 import android.graphics.drawable.Drawable;
 
 import java.io.File;
 
 import lombok.AllArgsConstructor;
-import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 

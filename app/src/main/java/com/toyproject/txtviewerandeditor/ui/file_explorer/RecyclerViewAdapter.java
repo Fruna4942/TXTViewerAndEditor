@@ -1,4 +1,4 @@
-package com.toyproject.txtviewerandeditor.ui.file_explore;
+package com.toyproject.txtviewerandeditor.ui.file_explorer;
 
 import android.content.Context;
 import android.view.LayoutInflater;
