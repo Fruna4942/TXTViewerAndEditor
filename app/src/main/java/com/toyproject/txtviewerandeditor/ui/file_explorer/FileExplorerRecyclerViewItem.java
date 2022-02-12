@@ -11,7 +11,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @AllArgsConstructor
-public class RecyclerViewItem {
-    private File file;
+public class FileExplorerRecyclerViewItem {
     private Drawable imageView;
+    private File file;
 }

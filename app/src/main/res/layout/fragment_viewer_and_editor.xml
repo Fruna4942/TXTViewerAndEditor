@@ -18,7 +18,7 @@
             android:layout_height="wrap_content"
             android:textSize="20sp"
             android:visibility="visible"
-            android:layout_gravity="top"/>
+            android:layout_gravity="top" />
         <!--
         <EditText
             android:id="@+id/edit_view_and_edit"

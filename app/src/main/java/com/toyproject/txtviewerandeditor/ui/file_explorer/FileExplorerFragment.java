@@ -33,21 +33,21 @@ public class FileExplorerFragment extends Fragment{
     private FileExplorerViewModel fileExplorerViewModel;
     private FragmentFileExplorerBinding binding;
     private RecyclerView recyclerView;
-    private RecyclerViewAdapter recyclerViewAdapter;
+    private FileExplorerRecyclerViewAdapter fileExplorerRecyclerViewAdapter;
     private final OnBackPressedCallback onBackPressedCallback = new OnBackPressedCallback(true) {
         @Override
         public void handleOnBackPressed() {
-            String presentPath = recyclerViewAdapter.getPresentPath();
+            String presentPath = fileExplorerRecyclerViewAdapter.getPresentPath();
             if (!presentPath.equals(Environment.getExternalStorageDirectory().getPath())) {
                 File file = new File(presentPath);
                 File parentFile = file.getParentFile();
                 presentPath = parentFile.getPath();
-                recyclerViewAdapter.changeDirectory(presentPath, getRecyclerViewItemList(presentPath));
-                recyclerView.setAdapter(recyclerViewAdapter);
+                fileExplorerRecyclerViewAdapter.changeDirectory(presentPath, getFileExplorerRecyclerViewItemList(presentPath));
+                recyclerView.setAdapter(fileExplorerRecyclerViewAdapter);
                 recyclerView.refreshDrawableState();
             }
             else {
-                NavDirections navDirections = FileExplorerFragmentDirections.actionNavFileExplorerToNavViewAndEdit();
+                NavDirections navDirections = FileExplorerFragmentDirections.actionNavFileExplorerToNavViewerAndEditor();
                 Navigation.findNavController(FileExplorerFragment.super.getView()).navigate(navDirections);
             }
         }
@@ -64,27 +64,27 @@ public class FileExplorerFragment extends Fragment{
 
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         String presentPath = Environment.getExternalStorageDirectory().getPath();
-        recyclerViewAdapter = new RecyclerViewAdapter(presentPath, getRecyclerViewItemList(presentPath));
-        recyclerView.setAdapter(recyclerViewAdapter);
+        fileExplorerRecyclerViewAdapter = new FileExplorerRecyclerViewAdapter(presentPath, getFileExplorerRecyclerViewItemList(presentPath));
+        recyclerView.setAdapter(fileExplorerRecyclerViewAdapter);
         recyclerView.addItemDecoration(new DividerItemDecoration(getContext(), 1));
 
-        recyclerViewAdapter.setOnItemClickListener(new RecyclerViewAdapter.OnItemClickListener() {
+        fileExplorerRecyclerViewAdapter.setOnItemClickListener(new FileExplorerRecyclerViewAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(View view, int pos) {
-                String presentPath = recyclerViewAdapter.getRecyclerViewItemArrayList().get(pos).getFile().getPath();
+                String presentPath = fileExplorerRecyclerViewAdapter.getRecyclerViewItemArrayList().get(pos).getFile().getPath();
 
                 File file = new File(presentPath);
                 if (file.isDirectory()) {
-                    recyclerViewAdapter.changeDirectory(presentPath, getRecyclerViewItemList(presentPath));
-                    recyclerView.setAdapter(recyclerViewAdapter);
+                    fileExplorerRecyclerViewAdapter.changeDirectory(presentPath, getFileExplorerRecyclerViewItemList(presentPath));
+                    recyclerView.setAdapter(fileExplorerRecyclerViewAdapter);
                     recyclerView.refreshDrawableState();
                 } else if (MimeTypeMap.getFileExtensionFromUrl(Uri.fromFile(file).toString()).equals("txt")) {
-                    SharedPreferences sharedPreferences = getActivity().getPreferences(Context.MODE_PRIVATE);
+                    SharedPreferences sharedPreferences = getActivity().getSharedPreferences(getString(R.string.preference_file_key), Context.MODE_PRIVATE);
                     SharedPreferences.Editor editor = sharedPreferences.edit();
                     editor.putString(getString(R.string.present_file), file.getPath());
                     editor.apply();
 
-                    NavDirections navDirections = FileExplorerFragmentDirections.actionNavFileExplorerToNavViewAndEdit();
+                    NavDirections navDirections = FileExplorerFragmentDirections.actionNavFileExplorerToNavViewerAndEditor();
                     Navigation.findNavController(view).navigate(navDirections);
                 }
             }
@@ -115,17 +115,17 @@ public class FileExplorerFragment extends Fragment{
         onBackPressedCallback.setEnabled(false);
     }
 
-    public ArrayList<RecyclerViewItem> getRecyclerViewItemList(String presentPath) {
-        ArrayList<RecyclerViewItem> recyclerViewItemArrayList = new ArrayList<>();
-        File file = new File(presentPath);
-        File[] fileList = file.listFiles();
+    public ArrayList<FileExplorerRecyclerViewItem> getFileExplorerRecyclerViewItemList(String presentPath) {
+        ArrayList<FileExplorerRecyclerViewItem> fileExplorerRecyclerViewItemArrayList = new ArrayList<>();
+        File presentFile = new File(presentPath);
+        File[] presentFileList = presentFile.listFiles();
 
-        if (file.exists()) {
-            if (fileList != null)
-                Arrays.sort(fileList);
+        if (presentFile.exists()) {
+            if (presentFileList != null)
+                Arrays.sort(presentFileList);
 
-            for (int i = 0; i < fileList.length; i++) {
-                File file_i = fileList[i];
+            for (int i = 0; i < presentFileList.length; i++) {
+                File file_i = presentFileList[i];
                 int drawableId = -1;
 
                 if (file_i.isDirectory())
@@ -134,12 +134,12 @@ public class FileExplorerFragment extends Fragment{
                     drawableId = R.drawable.ic_baseline_text_snippet_24_black;
 
                 if (drawableId != -1) {
-                    RecyclerViewItem recyclerViewItem = new RecyclerViewItem(file_i, ContextCompat.getDrawable(getContext(), drawableId));
-                    recyclerViewItemArrayList.add(recyclerViewItem);
+                    FileExplorerRecyclerViewItem fileExplorerRecyclerViewItem = new FileExplorerRecyclerViewItem(ContextCompat.getDrawable(getContext(), drawableId), file_i);
+                    fileExplorerRecyclerViewItemArrayList.add(fileExplorerRecyclerViewItem);
                 }
             }
         }
 
-        return recyclerViewItemArrayList;
+        return fileExplorerRecyclerViewItemArrayList;
     }
 }

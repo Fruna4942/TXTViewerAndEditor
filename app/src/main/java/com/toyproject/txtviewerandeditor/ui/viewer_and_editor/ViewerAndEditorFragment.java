@@ -52,7 +52,7 @@ public class ViewerAndEditorFragment extends Fragment {
         View root = binding.getRoot();
         textView = binding.textViewerAndEditor;
 
-        SharedPreferences sharedPreferences = getActivity().getPreferences(Context.MODE_PRIVATE);
+        SharedPreferences sharedPreferences = getActivity().getSharedPreferences(getString(R.string.preference_file_key), Context.MODE_PRIVATE);
         String present_file = sharedPreferences.getString(getString(R.string.present_file), getString(R.string.present_file_default_value));
         File file = new File(present_file);
         if (!file.exists()) {
