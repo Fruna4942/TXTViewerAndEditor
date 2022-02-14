@@ -2,6 +2,9 @@ package com.toyproject.txtviewerandeditor.ui.setting;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -50,12 +53,14 @@ public class SettingFragment extends Fragment {
 
         SharedPreferences sharedPreferences = getActivity().getSharedPreferences(getString(R.string.preference_file_key), Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
-        String theme = sharedPreferences.getString(getString(R.string.theme), getString(R.string.theme_dark));
-        settingListViewItemArrayList.add(new SettingListViewItem("밝은 테마", (theme == getString(R.string.theme_light)), true));
+        String presentTheme = sharedPreferences.getString(getString(R.string.theme), getString(R.string.theme_dark));
+        settingListViewItemArrayList.add(new SettingListViewItem("밝은 테마", presentTheme.equals(getString(R.string.theme_light)), true));
         settingListViewItemArrayList.add(new SettingListViewItem("편집 여부", false, true));
 
         ListView listView = binding.listViewFragmentSetting;
         SettingListViewAdapter settingListViewAdapter = new SettingListViewAdapter(settingListViewItemArrayList);
+
+        setTheme(presentTheme, listView);
 
         listView.setAdapter(settingListViewAdapter);
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -64,12 +69,16 @@ public class SettingFragment extends Fragment {
                 final int position = i;
 
                 switch (position) {
-                    case 0:
+                    case 0: // text size
                         // TODO: 2022-02-13 글자크기 설정 구현
-                        // text size
+                        break;
+                    case 1: // light theme
+                    case 2: // editable
+                        boolean isChecked = ((SettingListViewItem) settingListViewAdapter.getItem(position)).getSwitchChecked();
+                        ((SettingListViewItem) settingListViewAdapter.getItem(position)).setSwitchChecked(!isChecked);
+                        settingListViewAdapter.notifyDataSetChanged();
                         break;
                 }
-                
 
                 SettingListViewItem settingListViewItem = (SettingListViewItem) adapterView.getItemAtPosition(position);
             }
@@ -83,5 +92,18 @@ public class SettingFragment extends Fragment {
     public void onDestroyView() {
         super.onDestroyView();
         binding = null;
+    }
+
+    public void setTheme(String presentTheme, ListView listView) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
+            int dividerHeight = listView.getDividerHeight();
+            if (presentTheme.equals(getString(R.string.theme_dark))) {
+                listView.setDivider(new ColorDrawable(getContext().getColor(R.color.divider_dark)));
+                listView.setDividerHeight(dividerHeight);
+            } else if (presentTheme.equals(getString(R.string.theme_light))) {
+                listView.setDivider(new ColorDrawable(getContext().getColor(R.color.divider_light)));
+                listView.setDividerHeight(dividerHeight);
+            }
+        }
     }
 }

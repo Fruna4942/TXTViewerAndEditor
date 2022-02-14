@@ -3,6 +3,7 @@ package com.toyproject.txtviewerandeditor.ui.setting;
 import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.os.Build;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,6 +22,8 @@ import java.util.ArrayList;
 
 public class SettingListViewAdapter extends BaseAdapter {
     private ArrayList<SettingListViewItem> settingListViewItemArrayList = new ArrayList<SettingListViewItem>();
+    private TextView textView;
+    private Switch sw;
 
     public SettingListViewAdapter(ArrayList<SettingListViewItem> settingListViewItemArrayList) {
         this.settingListViewItemArrayList = settingListViewItemArrayList;
@@ -53,8 +56,10 @@ public class SettingListViewAdapter extends BaseAdapter {
             view = layoutInflater.inflate(R.layout.item_list_view_setting, viewGroup, false);
         }
 
-        TextView textView = (TextView) view.findViewById(R.id.title_text_item_list);
-        Switch sw = (Switch) view.findViewById(R.id.switch_item_list);
+        textView = (TextView) view.findViewById(R.id.title_text_item_list);
+        sw = (Switch) view.findViewById(R.id.switch_item_list);
+
+        setTheme(viewGroup);
 
         SettingListViewItem settingListViewItem = settingListViewItemArrayList.get(position);
 
@@ -63,8 +68,7 @@ public class SettingListViewAdapter extends BaseAdapter {
         sw.setVisibility((settingListViewItem.getSwitchVisibility()) ? View.VISIBLE : View.GONE);
         if (settingListViewItem.getSwitchVisibility()) {
             switch (position) {
-                case 1:
-                    // theme switch
+                case 1: // light theme switch
                     sw.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                         @Override
                         public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
@@ -86,14 +90,28 @@ public class SettingListViewAdapter extends BaseAdapter {
                         }
                     });
                     break;
-                case 2:
-                    // TODO: 2022-02-13 텍스트 편집 가능 설정 구현 
-                    // edit switch
+                case 2: // edit switch
+                    // TODO: 2022-02-13 텍스트 편집 가능 설정 구현
                     
                     break;
             }
         }
 
         return view;
+    }
+
+    public void setTheme(ViewGroup viewGroup) {
+        Context context = viewGroup.getContext();
+
+        SharedPreferences sharedPreferences = context.getSharedPreferences(context.getString(R.string.preference_file_key), Context.MODE_PRIVATE);
+        String presentTheme = sharedPreferences.getString(context.getString(R.string.theme), context.getString(R.string.theme_dark));
+
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
+            if (presentTheme.equals(context.getString(R.string.theme_dark))) {
+                textView.setTextColor(context.getColor(R.color.text_color_dark));
+            } else if (presentTheme.equals(context.getString(R.string.theme_light))) {
+                textView.setTextColor(context.getColor(R.color.text_color_light));
+            }
+        }
     }
 }

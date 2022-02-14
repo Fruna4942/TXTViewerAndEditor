@@ -32,9 +32,31 @@
         <entry key="..\:/Programming Lecture/AndroidStudio/projects/txtViewerAndEditor/app/src/main/res/mipmap-anydpi-v26/ic_launcher_round.xml" value="0.20854700854700856" />
         <entry key="..\:/Programming Lecture/AndroidStudio/projects/txtViewerAndEditor/app/src/main/res/xml/preference_screen.xml" value="0.15683760683760684" />
         <entry key="..\:/Programming Lecture/AndroidStudio/projects/txtViewerAndEditor/app/src/main/res/xml/preference_screen_setting.xml" value="0.3004273504273504" />
+        <entry key="..\:/Programming Lecture/AndroidStudio/projects/txtViewerAndEditor/txtViewerAndEditor/app/src/main/res/drawable-v24/ic_launcher_foreground.xml" value="0.253125" />
+        <entry key="..\:/Programming Lecture/AndroidStudio/projects/txtViewerAndEditor/txtViewerAndEditor/app/src/main/res/drawable/ic_baseline_folder_24_black.xml" value="0.253125" />
+        <entry key="..\:/Programming Lecture/AndroidStudio/projects/txtViewerAndEditor/txtViewerAndEditor/app/src/main/res/drawable/ic_baseline_folder_24_white.xml" value="0.253125" />
+        <entry key="..\:/Programming Lecture/AndroidStudio/projects/txtViewerAndEditor/txtViewerAndEditor/app/src/main/res/drawable/ic_baseline_settings_24_white.xml" value="0.253125" />
+        <entry key="..\:/Programming Lecture/AndroidStudio/projects/txtViewerAndEditor/txtViewerAndEditor/app/src/main/res/drawable/ic_baseline_text_snippet_24_black.xml" value="0.287962962962963" />
+        <entry key="..\:/Programming Lecture/AndroidStudio/projects/txtViewerAndEditor/txtViewerAndEditor/app/src/main/res/drawable/ic_baseline_text_snippet_24_white.xml" value="0.22135416666666666" />
+        <entry key="..\:/Programming Lecture/AndroidStudio/projects/txtViewerAndEditor/txtViewerAndEditor/app/src/main/res/drawable/list_view_divider_dark.xml" value="0.20989583333333334" />
+        <entry key="..\:/Programming Lecture/AndroidStudio/projects/txtViewerAndEditor/txtViewerAndEditor/app/src/main/res/drawable/nav_view_item_background.xml" value="0.22135416666666666" />
+        <entry key="..\:/Programming Lecture/AndroidStudio/projects/txtViewerAndEditor/txtViewerAndEditor/app/src/main/res/drawable/nav_view_item_background_dark.xml" value="0.20989583333333334" />
+        <entry key="..\:/Programming Lecture/AndroidStudio/projects/txtViewerAndEditor/txtViewerAndEditor/app/src/main/res/drawable/nav_view_item_background_light.xml" value="0.22135416666666666" />
+        <entry key="..\:/Programming Lecture/AndroidStudio/projects/txtViewerAndEditor/txtViewerAndEditor/app/src/main/res/drawable/recycler_view_divider_dark.xml" value="0.253125" />
+        <entry key="..\:/Programming Lecture/AndroidStudio/projects/txtViewerAndEditor/txtViewerAndEditor/app/src/main/res/drawable/recycler_view_divider_light.xml" value="0.25416666666666665" />
+        <entry key="..\:/Programming Lecture/AndroidStudio/projects/txtViewerAndEditor/txtViewerAndEditor/app/src/main/res/drawable/side_nav_bar.xml" value="0.253125" />
+        <entry key="..\:/Programming Lecture/AndroidStudio/projects/txtViewerAndEditor/txtViewerAndEditor/app/src/main/res/layout/activity_main.xml" value="0.2046875" />
+        <entry key="..\:/Programming Lecture/AndroidStudio/projects/txtViewerAndEditor/txtViewerAndEditor/app/src/main/res/layout/app_bar_main.xml" value="0.2046875" />
+        <entry key="..\:/Programming Lecture/AndroidStudio/projects/txtViewerAndEditor/txtViewerAndEditor/app/src/main/res/layout/content_main.xml" value="0.2046875" />
+        <entry key="..\:/Programming Lecture/AndroidStudio/projects/txtViewerAndEditor/txtViewerAndEditor/app/src/main/res/layout/fragment_file_explorer.xml" value="0.19021739130434784" />
         <entry key="..\:/Programming Lecture/AndroidStudio/projects/txtViewerAndEditor/txtViewerAndEditor/app/src/main/res/layout/fragment_setting.xml" value="0.3004273504273504" />
         <entry key="..\:/Programming Lecture/AndroidStudio/projects/txtViewerAndEditor/txtViewerAndEditor/app/src/main/res/layout/fragment_viewer_and_editor.xml" value="0.3004273504273504" />
         <entry key="..\:/Programming Lecture/AndroidStudio/projects/txtViewerAndEditor/txtViewerAndEditor/app/src/main/res/layout/item_list_view_setting.xml" value="0.18547008547008548" />
+        <entry key="..\:/Programming Lecture/AndroidStudio/projects/txtViewerAndEditor/txtViewerAndEditor/app/src/main/res/layout/item_recycler_view_file_explorer.xml" value="0.19021739130434784" />
+        <entry key="..\:/Programming Lecture/AndroidStudio/projects/txtViewerAndEditor/txtViewerAndEditor/app/src/main/res/layout/nav_header_main.xml" value="0.23697916666666666" />
+        <entry key="..\:/Programming Lecture/AndroidStudio/projects/txtViewerAndEditor/txtViewerAndEditor/app/src/main/res/menu/activity_main_drawer.xml" value="0.5635416666666667" />
+        <entry key="..\:/Programming Lecture/AndroidStudio/projects/txtViewerAndEditor/txtViewerAndEditor/app/src/main/res/menu/main.xml" value="0.23697916666666666" />
+        <entry key="..\:/Programming Lecture/AndroidStudio/projects/txtViewerAndEditor/txtViewerAndEditor/app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml" value="0.22135416666666666" />
         <entry key="..\:/Users/Fruna/Documents/Projects/AndroidStudio/txtViewerAndEditor/app/src/main/res/drawable/ic_baseline_settings_24_black.xml" value="0.183" />
         <entry key="..\:/Users/Fruna/Documents/Projects/AndroidStudio/txtViewerAndEditor/app/src/main/res/drawable/shape.xml" value="0.2645" />
         <entry key="..\:/Users/Fruna/Documents/Projects/AndroidStudio/txtViewerAndEditor/app/src/main/res/drawable/shape_button.xml" value="0.2645" />

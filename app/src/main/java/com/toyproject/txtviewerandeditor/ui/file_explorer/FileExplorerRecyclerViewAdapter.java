@@ -1,6 +1,9 @@
 package com.toyproject.txtviewerandeditor.ui.file_explorer;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.SharedPreferences;
+import android.os.Build;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -8,6 +11,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
+import androidx.appcompat.app.AppCompatDelegate;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.toyproject.txtviewerandeditor.R;
@@ -83,12 +88,57 @@ public class FileExplorerRecyclerViewAdapter extends RecyclerView.Adapter<FileEx
     public void onBindViewHolder(@NonNull FileExplorerRecyclerViewAdapter.ViewHolder holder, int position) {
         FileExplorerRecyclerViewItem fileExplorerRecyclerViewItem = fileExplorerRecyclerViewItemArrayList.get(position);
 
-        holder.imageView.setImageDrawable(fileExplorerRecyclerViewItem.getImageView());
+        boolean isDirectory = fileExplorerRecyclerViewItem.getIsDirectory();
+        Context context = holder.itemView.getContext();
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            if (isDirectory)
+                holder.imageView.setImageDrawable(context.getDrawable(R.drawable.ic_baseline_folder_24_black));
+            else
+                holder.imageView.setImageDrawable(context.getDrawable(R.drawable.ic_baseline_text_snippet_24_black));
+        } else {
+            SharedPreferences sharedPreferences = context.getSharedPreferences(context.getString(R.string.preference_file_key), Context.MODE_PRIVATE);
+            String presentTheme = sharedPreferences.getString(context.getString(R.string.theme), context.getString(R.string.theme_dark));
+
+            if (presentTheme.equals(context.getString(R.string.theme_dark))) {
+                if (isDirectory)
+                    holder.imageView.setImageDrawable(context.getDrawable(R.drawable.ic_baseline_folder_24_white));
+                else
+                    holder.imageView.setImageDrawable(context.getDrawable(R.drawable.ic_baseline_text_snippet_24_white));
+                holder.textView.setTextColor(context.getColor(R.color.text_color_dark));
+            } else if (presentTheme.equals(context.getString(R.string.theme_light))) {
+                if (isDirectory)
+                    holder.imageView.setImageDrawable(context.getDrawable(R.drawable.ic_baseline_folder_24_black));
+                else
+                    holder.imageView.setImageDrawable(context.getDrawable(R.drawable.ic_baseline_text_snippet_24_black));
+                holder.textView.setTextColor(context.getColor(R.color.text_color_light));
+            }
+        }
+
         holder.textView.setText(fileExplorerRecyclerViewItem.getFile().getName());
+
     }
 
     @Override
     public int getItemCount() {
         return fileExplorerRecyclerViewItemArrayList.size();
     }
+
+    /*
+    public void setTheme(Context context, FileExplorerRecyclerViewAdapter.ViewHolder viewHolder) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
+            SharedPreferences sharedPreferences = context.getSharedPreferences(context.getString(R.string.preference_file_key), Context.MODE_PRIVATE);
+            String presentTheme = sharedPreferences.getString(context.getString(R.string.theme), context.getString(R.string.theme_dark));
+
+            TextView textView = viewHolder.textView;
+
+            if (presentTheme.equals(context.getString(R.string.theme_dark))) {
+                textView.setTextColor(context.getColor(R.color.text_color_dark));
+
+            } else if (presentTheme.equals(context.getString(R.string.theme_light))) {
+                textView.setTextColor(context.getColor(R.color.text_color_light));
+            }
+        }
+    }*/
+
 }

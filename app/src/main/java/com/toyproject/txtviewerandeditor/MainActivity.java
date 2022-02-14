@@ -6,7 +6,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.content.res.Resources;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -16,6 +15,8 @@ import android.provider.Settings;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
+import androidx.appcompat.widget.Toolbar;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.view.GravityCompat;
@@ -27,12 +28,14 @@ import androidx.navigation.ui.NavigationUI;
 
 import com.google.android.material.navigation.NavigationView;
 import com.toyproject.txtviewerandeditor.databinding.ActivityMainBinding;
+import com.toyproject.txtviewerandeditor.databinding.ContentMainBinding;
 
 public class MainActivity extends AppCompatActivity {
 
     private AppBarConfiguration mAppBarConfiguration;
     private ActivityMainBinding binding;
     private DrawerLayout drawerLayout;
+    private NavigationView navigationView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,22 +45,8 @@ public class MainActivity extends AppCompatActivity {
         setContentView(binding.getRoot());
         setSupportActionBar(binding.appBarMain.toolbar);
 
-        // load theme
-        SharedPreferences sharedPreferences = getSharedPreferences(getString(R.string.preference_file_key), Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        String theme = sharedPreferences.getString(getString(R.string.theme), null);
-        if (theme == null) {
-            editor.putString(getString(R.string.theme), getString(R.string.theme_dark));
-            editor.apply();
-            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
-        } else if (theme.equals(getString(R.string.theme_dark))) {
-            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
-        } else if (theme.equals(getString(R.string.theme_light))) {
-            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
-        }
-
         drawerLayout = binding.drawerLayout;
-        NavigationView navigationView = binding.navView;
+        navigationView = binding.navView;
         // Passing each menu ID as a set of Ids because each
         // menu should be considered as top level destinations.
         mAppBarConfiguration = new AppBarConfiguration.Builder(
@@ -67,6 +56,11 @@ public class MainActivity extends AppCompatActivity {
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_content_main);
         NavigationUI.setupActionBarWithNavController(this, navController, mAppBarConfiguration);
         NavigationUI.setupWithNavController(navigationView, navController);
+
+        SharedPreferences sharedPreferences = getSharedPreferences(getString(R.string.preference_file_key), Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        String presentTheme = sharedPreferences.getString(getString(R.string.theme), null);
+        setTheme(presentTheme, editor);
     }
 
     /*
@@ -159,6 +153,7 @@ public class MainActivity extends AppCompatActivity {
         builder.setCancelable(false);
         builder.show();
     }
+
     public void popUpAlertDialogCantUseWithoutPermission() {
         AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
         builder.setTitle("권한필요!")
@@ -177,5 +172,49 @@ public class MainActivity extends AppCompatActivity {
         });
         builder.setCancelable(false);
         builder.show();
+    }
+
+    public void setTheme(String presentTheme, SharedPreferences.Editor editor) {
+        ContentMainBinding contentMainBinding = binding.appBarMain.contentMain;
+
+        Toolbar toolbar;
+        ConstraintLayout constraintLayout;
+
+        toolbar = binding.appBarMain.toolbar;
+        constraintLayout = contentMainBinding.getRoot();
+
+        if (presentTheme == null) {
+            presentTheme = getString(R.string.theme_dark);
+            editor.putString(getString(R.string.theme), getString(R.string.theme_dark));
+            editor.apply();
+        }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            if (presentTheme.equals(getString(R.string.theme_dark))) {
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+            } else if (presentTheme.equals(getString(R.string.theme_light))) {
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+            }
+        } else {
+            if (presentTheme.equals(getString(R.string.theme_dark))) {
+                toolbar.setBackgroundColor(getColor(R.color.primary_dark));
+                constraintLayout.setBackgroundColor(getColor(R.color.background_dark));
+                getWindow().setStatusBarColor(getColor(R.color.primary_variant_dark));
+                navigationView.setBackgroundColor(getColor(R.color.background_dark));
+                navigationView.setItemTextColor(getColorStateList(R.color.color_state_list_dark));
+                navigationView.setItemIconTintList(getColorStateList(R.color.color_state_list_dark));
+                navigationView.setItemBackground(getDrawable(R.drawable.nav_view_item_background_dark));
+                //setTheme(R.style.Theme_Dark_TxtViewerAndEditor);
+            } else if (presentTheme.equals(getString(R.string.theme_light))) {
+                toolbar.setBackgroundColor(getColor(R.color.primary_light));
+                constraintLayout.setBackgroundColor(getColor(R.color.background_light));
+                getWindow().setStatusBarColor(getColor(R.color.primary_variant_light));
+                navigationView.setBackgroundColor(getColor(R.color.background_light));
+                navigationView.setItemTextColor(getColorStateList(R.color.color_state_list_light));
+                navigationView.setItemIconTintList(getColorStateList(R.color.color_state_list_light));
+                navigationView.setItemBackground(getDrawable(R.drawable.nav_view_item_background_light));
+                //setTheme(R.style.Theme_Light_TxtViewerAndEditor);
+            }
+        }
     }
 }

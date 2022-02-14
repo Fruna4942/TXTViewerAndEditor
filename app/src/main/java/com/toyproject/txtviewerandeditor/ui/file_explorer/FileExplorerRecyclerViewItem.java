@@ -12,6 +12,6 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 public class FileExplorerRecyclerViewItem {
-    private Drawable imageView;
+    private Boolean isDirectory;
     private File file;
 }

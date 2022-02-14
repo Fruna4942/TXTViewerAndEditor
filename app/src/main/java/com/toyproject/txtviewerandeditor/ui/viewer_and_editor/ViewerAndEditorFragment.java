@@ -50,27 +50,30 @@ public class ViewerAndEditorFragment extends Fragment {
 
         binding = FragmentViewerAndEditorBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
+
         textView = binding.textViewerAndEditor;
 
+        setTheme();
+
         SharedPreferences sharedPreferences = getActivity().getSharedPreferences(getString(R.string.preference_file_key), Context.MODE_PRIVATE);
-        String present_file = sharedPreferences.getString(getString(R.string.present_file), getString(R.string.present_file_default_value));
-        File file = new File(present_file);
+        String presentFile = sharedPreferences.getString(getString(R.string.present_file), getString(R.string.present_file_default_value));
+        File file = new File(presentFile);
         if (!file.exists()) {
             SharedPreferences.Editor editor = sharedPreferences.edit();
             editor.putString(getString(R.string.present_file), getString(R.string.present_file_default_value));
             editor.apply();
 
-            present_file = getString(R.string.present_file_default_value);
+            presentFile = getString(R.string.present_file_default_value);
         }
 
-        if (present_file.equals(getString(R.string.present_file_default_value))) {
+        if (presentFile.equals(getString(R.string.present_file_default_value))) {
             textView.setGravity(Gravity.CENTER);
             textView.setText("txt파일을 선택해 주세요");
         } else {
             textView.setGravity(Gravity.NO_GRAVITY);
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 try {
-                    byte[] bytes = Files.readAllBytes(Paths.get(present_file));
+                    byte[] bytes = Files.readAllBytes(Paths.get(presentFile));
                     textView.setText(new String(bytes));
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -119,5 +122,18 @@ public class ViewerAndEditorFragment extends Fragment {
         super.onPause();
 
         onBackPressedCallback.setEnabled(false);
+    }
+
+    public void setTheme() {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
+            SharedPreferences sharedPreferences = getActivity().getSharedPreferences(getString(R.string.preference_file_key), Context.MODE_PRIVATE);
+            String presentTheme = sharedPreferences.getString(getString(R.string.theme), getString(R.string.theme_dark));
+
+            if (presentTheme.equals(getString(R.string.theme_dark))) {
+                textView.setTextColor(getActivity().getColor(R.color.text_color_dark));
+            } else if (presentTheme.equals(getString(R.string.theme_light))) {
+                textView.setTextColor(getActivity().getColor(R.color.text_color_light));
+            }
+        }
     }
 }

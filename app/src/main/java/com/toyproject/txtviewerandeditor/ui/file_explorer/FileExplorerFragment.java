@@ -2,13 +2,17 @@ package com.toyproject.txtviewerandeditor.ui.file_explorer;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.MimeTypeMap;
+import android.widget.ListView;
+import android.widget.TextView;
 
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
@@ -24,6 +28,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.toyproject.txtviewerandeditor.R;
 import com.toyproject.txtviewerandeditor.databinding.FragmentFileExplorerBinding;
 
+import org.w3c.dom.Text;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -32,7 +38,6 @@ public class FileExplorerFragment extends Fragment{
 
     private FileExplorerViewModel fileExplorerViewModel;
     private FragmentFileExplorerBinding binding;
-    private RecyclerView recyclerView;
     private FileExplorerRecyclerViewAdapter fileExplorerRecyclerViewAdapter;
     private final OnBackPressedCallback onBackPressedCallback = new OnBackPressedCallback(true) {
         @Override
@@ -43,8 +48,9 @@ public class FileExplorerFragment extends Fragment{
                 File parentFile = file.getParentFile();
                 presentPath = parentFile.getPath();
                 fileExplorerRecyclerViewAdapter.changeDirectory(presentPath, getFileExplorerRecyclerViewItemList(presentPath));
-                recyclerView.setAdapter(fileExplorerRecyclerViewAdapter);
-                recyclerView.refreshDrawableState();
+                //recyclerView.setAdapter(fileExplorerRecyclerViewAdapter);
+                //recyclerView.refreshDrawableState();
+                fileExplorerRecyclerViewAdapter.notifyDataSetChanged();
             }
             else {
                 NavDirections navDirections = FileExplorerFragmentDirections.actionNavFileExplorerToNavViewerAndEditor();
@@ -60,13 +66,17 @@ public class FileExplorerFragment extends Fragment{
 
         binding = FragmentFileExplorerBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
-        recyclerView = binding.recyclerView;
 
+        RecyclerView recyclerView = binding.recyclerView;
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         String presentPath = Environment.getExternalStorageDirectory().getPath();
         fileExplorerRecyclerViewAdapter = new FileExplorerRecyclerViewAdapter(presentPath, getFileExplorerRecyclerViewItemList(presentPath));
         recyclerView.setAdapter(fileExplorerRecyclerViewAdapter);
         recyclerView.addItemDecoration(new DividerItemDecoration(getContext(), 1));
+
+        SharedPreferences sharedPreferences = getActivity().getSharedPreferences(getString(R.string.preference_file_key), Context.MODE_PRIVATE);
+        String presentTheme = sharedPreferences.getString(getString(R.string.theme), getString(R.string.theme_dark));
+        setTheme(presentTheme, recyclerView);
 
         fileExplorerRecyclerViewAdapter.setOnItemClickListener(new FileExplorerRecyclerViewAdapter.OnItemClickListener() {
             @Override
@@ -76,8 +86,9 @@ public class FileExplorerFragment extends Fragment{
                 File file = new File(presentPath);
                 if (file.isDirectory()) {
                     fileExplorerRecyclerViewAdapter.changeDirectory(presentPath, getFileExplorerRecyclerViewItemList(presentPath));
-                    recyclerView.setAdapter(fileExplorerRecyclerViewAdapter);
-                    recyclerView.refreshDrawableState();
+                    //recyclerView.setAdapter(fileExplorerRecyclerViewAdapter);
+                    //recyclerView.refreshDrawableState();
+                    fileExplorerRecyclerViewAdapter.notifyDataSetChanged();
                 } else if (MimeTypeMap.getFileExtensionFromUrl(Uri.fromFile(file).toString()).equals("txt")) {
                     SharedPreferences sharedPreferences = getActivity().getSharedPreferences(getString(R.string.preference_file_key), Context.MODE_PRIVATE);
                     SharedPreferences.Editor editor = sharedPreferences.edit();
@@ -126,20 +137,31 @@ public class FileExplorerFragment extends Fragment{
 
             for (int i = 0; i < presentFileList.length; i++) {
                 File file_i = presentFileList[i];
-                int drawableId = -1;
+                boolean anotherFile = true;
+                boolean isDirectory = file_i.isDirectory();
 
-                if (file_i.isDirectory())
-                    drawableId = R.drawable.ic_baseline_folder_24_black;
-                else if (MimeTypeMap.getFileExtensionFromUrl(Uri.fromFile(file_i).toString()).equals("txt"))
-                    drawableId = R.drawable.ic_baseline_text_snippet_24_black;
+                if (isDirectory || MimeTypeMap.getFileExtensionFromUrl(Uri.fromFile(file_i).toString()).equals("txt"))
+                    anotherFile = false;
 
-                if (drawableId != -1) {
-                    FileExplorerRecyclerViewItem fileExplorerRecyclerViewItem = new FileExplorerRecyclerViewItem(ContextCompat.getDrawable(getContext(), drawableId), file_i);
+                if (!anotherFile) {
+                    FileExplorerRecyclerViewItem fileExplorerRecyclerViewItem = new FileExplorerRecyclerViewItem(isDirectory, file_i);
                     fileExplorerRecyclerViewItemArrayList.add(fileExplorerRecyclerViewItem);
                 }
             }
         }
 
         return fileExplorerRecyclerViewItemArrayList;
+    }
+
+    public void setTheme(String presentTheme, RecyclerView recyclerView) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
+            DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(getContext(), LinearLayoutManager.VERTICAL);
+            if (presentTheme.equals(getString(R.string.theme_dark))) {
+                dividerItemDecoration.setDrawable(getResources().getDrawable(R.drawable.recycler_view_divider_dark));
+            } else if (presentTheme.equals(getString(R.string.theme_light))) {
+                dividerItemDecoration.setDrawable(getResources().getDrawable(R.drawable.recycler_view_divider_light));
+            }
+            recyclerView.addItemDecoration(dividerItemDecoration);
+        }
     }
 }
