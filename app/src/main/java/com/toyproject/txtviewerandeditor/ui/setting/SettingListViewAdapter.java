@@ -67,14 +67,14 @@ public class SettingListViewAdapter extends BaseAdapter {
         sw.setChecked(settingListViewItem.getSwitchChecked());
         sw.setVisibility((settingListViewItem.getSwitchVisibility()) ? View.VISIBLE : View.GONE);
         if (settingListViewItem.getSwitchVisibility()) {
+            SharedPreferences sharedPreferences = context.getSharedPreferences(context.getString(R.string.preference_file_key), Context.MODE_PRIVATE);
+            SharedPreferences.Editor editor = sharedPreferences.edit();
+
             switch (position) {
                 case 1: // light theme switch
                     sw.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                         @Override
-                        public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                            final boolean isChecked = b;
-                            SharedPreferences sharedPreferences = context.getSharedPreferences(context.getString(R.string.preference_file_key), Context.MODE_PRIVATE);
-                            SharedPreferences.Editor editor = sharedPreferences.edit();
+                        public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
                             if (isChecked) {
                                 editor.putString(context.getString(R.string.theme), context.getString(R.string.theme_light));
                                 editor.apply();
@@ -91,8 +91,18 @@ public class SettingListViewAdapter extends BaseAdapter {
                     });
                     break;
                 case 2: // edit switch
-                    // TODO: 2022-02-13 텍스트 편집 가능 설정 구현
-                    
+                    sw.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                        @Override
+                        public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
+                            if (isChecked) {
+                                editor.putBoolean(context.getString(R.string.editable), true);
+                                editor.apply();
+                            } else {
+                                editor.putBoolean(context.getString(R.string.editable), false);
+                                editor.apply();
+                            }
+                        }
+                    });
                     break;
             }
         }

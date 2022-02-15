@@ -19,4 +19,9 @@
     <string name="theme">Theme</string>
     <string name="theme_dark">DarkTheme</string>
     <string name="theme_light">LightTheme</string>
+
+    <string name="editable">Editable</string>
+    <string name="alphabet">ABCDEFGHIJKLMNOPQRSTUVWXYZ\nabcdefghijklmnopqrstuvwxyz\n</string>
+
+    <string name="text_size">TextSize</string>
 </resources>

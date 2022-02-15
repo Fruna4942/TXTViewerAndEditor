@@ -11,12 +11,14 @@
     <color name="primary_dark">#FF1F1F1F</color>
     <color name="primary_variant_dark">#FF000000</color>
     <color name="on_primary_dark">#FFFFFFFF</color>
+    <color name="status_bar_dark">#FF000000</color>
     <color name="background_dark">#FF121212</color>
     <color name="text_color_dark">#FFFFFFFF</color>
 
     <color name="primary_light">#FF1F1F1F</color>
     <color name="primary_variant_light">#FF000000</color>
     <color name="on_primary_light">#FFFFFFFF</color>
+    <color name="status_bar_light">#FF121212</color>
     <color name="background_light">#FFFFFFFF</color>
     <color name="text_color_light">#FF121212</color>
 
@@ -25,4 +27,7 @@
 
     <color name="divider_dark">#FF2F2F2F</color>
     <color name="divider_light">#FFE0E0E0</color>
+
+    <color name="button">#FF1F1F1F</color>
+    <color name="button_pressed">#7F1F1F1F</color>
 </resources>

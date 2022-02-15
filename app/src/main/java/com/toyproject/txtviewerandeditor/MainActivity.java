@@ -35,7 +35,6 @@ public class MainActivity extends AppCompatActivity {
     private AppBarConfiguration mAppBarConfiguration;
     private ActivityMainBinding binding;
     private DrawerLayout drawerLayout;
-    private NavigationView navigationView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,8 +44,11 @@ public class MainActivity extends AppCompatActivity {
         setContentView(binding.getRoot());
         setSupportActionBar(binding.appBarMain.toolbar);
 
+        NavigationView navigationView;
+
         drawerLayout = binding.drawerLayout;
         navigationView = binding.navView;
+
         // Passing each menu ID as a set of Ids because each
         // menu should be considered as top level destinations.
         mAppBarConfiguration = new AppBarConfiguration.Builder(
@@ -60,29 +62,15 @@ public class MainActivity extends AppCompatActivity {
         SharedPreferences sharedPreferences = getSharedPreferences(getString(R.string.preference_file_key), Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
         String presentTheme = sharedPreferences.getString(getString(R.string.theme), null);
-        setTheme(presentTheme, editor);
-    }
 
-    /*
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.main, menu);
-        return true;
-    }
-     */
-
-    @Override
-    public boolean onSupportNavigateUp() {
-        NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_content_main);
-        return NavigationUI.navigateUp(navController, mAppBarConfiguration)
-                || super.onSupportNavigateUp();
+        setTheme(presentTheme, editor, navigationView);
     }
 
     @Override
     protected void onResume() {
         super.onResume();
 
+        // TODO: 2022-02-15 새로 설치시 API 30 이하에서 첫 설치 후 실행 시 Don't ask again으로 되어있음 수정필요
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             if (!Environment.isExternalStorageManager()) {
                 popUpAlertDialogPermission();
@@ -101,6 +89,13 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
+    public boolean onSupportNavigateUp() {
+        NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_content_main);
+        return NavigationUI.navigateUp(navController, mAppBarConfiguration)
+                || super.onSupportNavigateUp();
+    }
+
+    @Override
     public void onBackPressed() {
         // NavigationDrawer가 열려있다면 BackButton이 눌렸을 때 닫음
         if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
@@ -109,6 +104,15 @@ public class MainActivity extends AppCompatActivity {
             super.onBackPressed();
         }
     }
+
+    /*
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.main, menu);
+        return true;
+    }
+     */
 
     public void popUpAlertDialogPermission() {
         /*
@@ -127,9 +131,9 @@ public class MainActivity extends AppCompatActivity {
         */
         
         AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
-        builder.setTitle("권한필요!")
-                .setMessage("txt 파일을 열기 위해 파일 접근 권한이 필요합니다.");
-        builder.setNegativeButton("싫어요", new DialogInterface.OnClickListener() {
+        builder.setTitle("Need permission!")
+                .setMessage("Need all file access permission to open txt files.");
+        builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
                 finishAffinity();
@@ -139,7 +143,7 @@ public class MainActivity extends AppCompatActivity {
                  */
             }
         });
-        builder.setPositiveButton("확인", new DialogInterface.OnClickListener() {
+        builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
                 if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.R) {
@@ -156,11 +160,11 @@ public class MainActivity extends AppCompatActivity {
 
     public void popUpAlertDialogCantUseWithoutPermission() {
         AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
-        builder.setTitle("권한필요!")
-                .setMessage("Don't ask again을 선택 하셨습니다.\n" +
-                        "파일 접근 권한 없이는 어플 사용이 불가 합니다.\n" +
-                        "어플 사용을 위해 Settings>>Apps>>txtViewerAndEditor에 가셔서 파일 접근 권한을 설정해 주세요.");
-        builder.setPositiveButton("확인", new DialogInterface.OnClickListener() {
+        builder.setTitle("Need Permission!")
+                .setMessage("You choose 'Don't ask again'.\n" +
+                        "You can't use this application without all file access permission.\n" +
+                        "To use this application, please go to 'Settings>>Apps>>txtViewerAndEditor' and allow the permission.");
+        builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
                 finishAffinity();
@@ -174,7 +178,7 @@ public class MainActivity extends AppCompatActivity {
         builder.show();
     }
 
-    public void setTheme(String presentTheme, SharedPreferences.Editor editor) {
+    public void setTheme(String presentTheme, SharedPreferences.Editor editor, NavigationView navigationView) {
         ContentMainBinding contentMainBinding = binding.appBarMain.contentMain;
 
         Toolbar toolbar;

@@ -8,6 +8,8 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
 import androidx.activity.OnBackPressedCallback;
@@ -41,7 +43,10 @@ public class ViewerAndEditorFragment extends Fragment {
              */
         }
     };
+    private SharedPreferences sharedPreferences;
+    private boolean editable;
     private TextView textView;
+    private EditText editText;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -51,46 +56,17 @@ public class ViewerAndEditorFragment extends Fragment {
         binding = FragmentViewerAndEditorBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
 
+        sharedPreferences = getActivity().getSharedPreferences(getString(R.string.preference_file_key), Context.MODE_PRIVATE);
+        editable = sharedPreferences.getBoolean(getString(R.string.editable), false);
+
         textView = binding.textViewerAndEditor;
+        editText = binding.editTextViewerAndEditor;
 
-        setTheme();
-
-        SharedPreferences sharedPreferences = getActivity().getSharedPreferences(getString(R.string.preference_file_key), Context.MODE_PRIVATE);
-        String presentFile = sharedPreferences.getString(getString(R.string.present_file), getString(R.string.present_file_default_value));
-        File file = new File(presentFile);
-        if (!file.exists()) {
-            SharedPreferences.Editor editor = sharedPreferences.edit();
-            editor.putString(getString(R.string.present_file), getString(R.string.present_file_default_value));
-            editor.apply();
-
-            presentFile = getString(R.string.present_file_default_value);
-        }
-
-        if (presentFile.equals(getString(R.string.present_file_default_value))) {
-            textView.setGravity(Gravity.CENTER);
-            textView.setText("txt파일을 선택해 주세요");
+        if (editable) {
+            setTheme(editText);
         } else {
-            textView.setGravity(Gravity.NO_GRAVITY);
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                try {
-                    byte[] bytes = Files.readAllBytes(Paths.get(presentFile));
-                    textView.setText(new String(bytes));
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            } else {
-                try {
-                    BufferedReader bufferedReader = new BufferedReader(new FileReader(file));
-                    String str;
-                    while ((str = bufferedReader.readLine()) != null) {
-                        textView.append(str + "\n");
-                    }
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
+            setTheme(textView);
         }
-
         /*
         final TextView textView = binding.textHome;
         viewAndEditViewModel.getText().observe(getViewLifecycleOwner(), new Observer<String>() {
@@ -104,17 +80,31 @@ public class ViewerAndEditorFragment extends Fragment {
     }
 
     @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        binding = null;
-    }
-
-    @Override
     public void onResume() {
         super.onResume();
 
         onBackPressedCallback.setEnabled(true);
         requireActivity().getOnBackPressedDispatcher().addCallback(onBackPressedCallback);
+
+        String presentFile;
+
+        ScrollView scrollViewEditText;
+        ScrollView scrollViewText;
+
+        presentFile = setPresentFile(sharedPreferences);
+
+        scrollViewText = binding.scrollTextViewerAndEditor;
+        scrollViewEditText = binding.scrollEditTextViewerAndEditor;
+
+        if (editable) {
+            scrollViewText.setVisibility(View.GONE);
+            scrollViewEditText.setVisibility(View.VISIBLE);
+            setText(presentFile, editText);
+        } else {
+            scrollViewEditText.setVisibility(View.GONE);
+            scrollViewText.setVisibility(View.VISIBLE);
+            setText(presentFile, textView);
+        }
     }
 
     @Override
@@ -124,7 +114,13 @@ public class ViewerAndEditorFragment extends Fragment {
         onBackPressedCallback.setEnabled(false);
     }
 
-    public void setTheme() {
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        binding = null;
+    }
+
+    private void setTheme(TextView textView) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
             SharedPreferences sharedPreferences = getActivity().getSharedPreferences(getString(R.string.preference_file_key), Context.MODE_PRIVATE);
             String presentTheme = sharedPreferences.getString(getString(R.string.theme), getString(R.string.theme_dark));
@@ -133,6 +129,102 @@ public class ViewerAndEditorFragment extends Fragment {
                 textView.setTextColor(getActivity().getColor(R.color.text_color_dark));
             } else if (presentTheme.equals(getString(R.string.theme_light))) {
                 textView.setTextColor(getActivity().getColor(R.color.text_color_light));
+            }
+        }
+    }
+
+    private void setTheme(EditText editText) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
+            SharedPreferences sharedPreferences = getActivity().getSharedPreferences(getString(R.string.preference_file_key), Context.MODE_PRIVATE);
+            String presentTheme = sharedPreferences.getString(getString(R.string.theme), getString(R.string.theme_dark));
+
+            if (presentTheme.equals(getString(R.string.theme_dark))) {
+                editText.setTextColor(getActivity().getColor(R.color.text_color_dark));
+            } else if (presentTheme.equals(getString(R.string.theme_light))) {
+                editText.setTextColor(getActivity().getColor(R.color.text_color_light));
+            }
+        }
+    }
+
+    private String setPresentFile(SharedPreferences sharedPreferences) {
+        String presentFile = sharedPreferences.getString(getString(R.string.present_file), getString(R.string.present_file_default_value));
+
+        File file = new File(presentFile);
+        if (!file.exists()) {
+            SharedPreferences.Editor editor = sharedPreferences.edit();
+            editor.putString(getString(R.string.present_file), getString(R.string.present_file_default_value));
+            editor.apply();
+
+            presentFile = getString(R.string.present_file_default_value);
+        }
+        return presentFile;
+    }
+
+    private void setText(String presentFile, TextView textView) {
+        File file = new File(presentFile);
+        int textSize = sharedPreferences.getInt(getString(R.string.text_size), 20);
+
+        if (presentFile.equals(getString(R.string.present_file_default_value))) {
+            textView.setGravity(Gravity.CENTER);
+            textView.setText("Please select txt file");
+        } else {
+            textView.setTextSize(textSize);
+            textView.setGravity(Gravity.NO_GRAVITY);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                try {
+                    byte[] bytes = Files.readAllBytes(Paths.get(presentFile));
+                    textView.setText(new String(bytes));
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            } else {
+                try {
+                    BufferedReader bufferedReader = new BufferedReader(new FileReader(file));
+                    StringBuilder stringBuilder = new StringBuilder();
+                    String bufferReadLine;
+                    while ((bufferReadLine = bufferedReader.readLine()) != null) {
+                        stringBuilder.append(bufferReadLine).append("\n");
+                    }
+                    stringBuilder = new StringBuilder(stringBuilder.substring(0, stringBuilder.length() - 1));
+                    textView.setText(stringBuilder.toString());
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
+    private void setText(String presentFile, EditText editText) {
+        File file = new File(presentFile);
+
+        int textSize = sharedPreferences.getInt(getString(R.string.text_size), 20);
+
+        if (presentFile.equals(getString(R.string.present_file_default_value))) {
+            editText.setGravity(Gravity.CENTER);
+            editText.setText("Please select txt file");
+        } else {
+            editText.setTextSize(textSize);
+            editText.setGravity(Gravity.NO_GRAVITY);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                try {
+                    byte[] bytes = Files.readAllBytes(Paths.get(presentFile));
+                    editText.setText(new String(bytes));
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            } else {
+                try {
+                    BufferedReader bufferedReader = new BufferedReader(new FileReader(file));
+                    StringBuilder stringBuilder = new StringBuilder();
+                    String bufferReadLine;
+                    while ((bufferReadLine = bufferedReader.readLine()) != null) {
+                        stringBuilder.append(bufferReadLine).append("\n");
+                    }
+                    stringBuilder = new StringBuilder(stringBuilder.substring(0, stringBuilder.length() - 1));
+                    editText.setText(stringBuilder.toString());
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
         }
     }

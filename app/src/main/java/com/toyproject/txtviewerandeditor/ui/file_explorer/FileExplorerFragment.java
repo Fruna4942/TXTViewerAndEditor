@@ -67,15 +67,19 @@ public class FileExplorerFragment extends Fragment{
         binding = FragmentFileExplorerBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
 
-        RecyclerView recyclerView = binding.recyclerView;
-        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         String presentPath = Environment.getExternalStorageDirectory().getPath();
+        SharedPreferences sharedPreferences = getActivity().getSharedPreferences(getString(R.string.preference_file_key), Context.MODE_PRIVATE);
+        String presentTheme = sharedPreferences.getString(getString(R.string.theme), getString(R.string.theme_dark));
+
+        RecyclerView recyclerView;
+
         fileExplorerRecyclerViewAdapter = new FileExplorerRecyclerViewAdapter(presentPath, getFileExplorerRecyclerViewItemList(presentPath));
+
+        recyclerView = binding.recyclerView;
+        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerView.setAdapter(fileExplorerRecyclerViewAdapter);
         recyclerView.addItemDecoration(new DividerItemDecoration(getContext(), 1));
 
-        SharedPreferences sharedPreferences = getActivity().getSharedPreferences(getString(R.string.preference_file_key), Context.MODE_PRIVATE);
-        String presentTheme = sharedPreferences.getString(getString(R.string.theme), getString(R.string.theme_dark));
         setTheme(presentTheme, recyclerView);
 
         fileExplorerRecyclerViewAdapter.setOnItemClickListener(new FileExplorerRecyclerViewAdapter.OnItemClickListener() {
@@ -106,12 +110,6 @@ public class FileExplorerFragment extends Fragment{
     }
 
     @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        binding = null;
-    }
-
-    @Override
     public void onResume() {
         super.onResume();
 
@@ -124,6 +122,13 @@ public class FileExplorerFragment extends Fragment{
         super.onPause();
 
         onBackPressedCallback.setEnabled(false);
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+
+        binding = null;
     }
 
     public ArrayList<FileExplorerRecyclerViewItem> getFileExplorerRecyclerViewItemList(String presentPath) {
