@@ -34,6 +34,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+// TODO: 2022-02-16 새로운 txt 파일 추가 구현
 public class FileExplorerFragment extends Fragment{
 
     private FileExplorerViewModel fileExplorerViewModel;

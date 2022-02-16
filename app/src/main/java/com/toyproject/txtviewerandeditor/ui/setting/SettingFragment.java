@@ -78,29 +78,7 @@ public class SettingFragment extends Fragment {
 
                 switch (position) {
                     case 0: // text size
-                        // TODO: 2022-02-13 글자크기 설정 구현
-                        /*
-                        NumberPicker numberPicker = new NumberPicker(getActivity());
-                        numberPicker.setMinValue(10);
-                        numberPicker.setMaxValue(50);
-
-                        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-                        builder.setTitle("Title")
-                                .setView(numberPicker)
-                                .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
-
-                            }
-                        })
-                                .setNegativeButton("No", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
-
-                            }
-                        });
-                        builder.show();
-                         */
+                        // TODO: 2022-02-16 API 28 이하에서의 Dialog Dark Theme 구현 
                         LayoutInflater layoutInflater = requireActivity().getLayoutInflater();
                         ConstraintLayout constraintLayout = (ConstraintLayout) layoutInflater.inflate(R.layout.dialog_text_size, null);
 
