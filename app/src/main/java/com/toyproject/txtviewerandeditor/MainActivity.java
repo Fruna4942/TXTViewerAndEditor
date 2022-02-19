@@ -1,6 +1,7 @@
 package com.toyproject.txtviewerandeditor;
 
 import android.Manifest;
+import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -12,6 +13,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.provider.Settings;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
@@ -78,24 +80,16 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onResume() {
-        super.onResume();
+    protected void onStart() {
+        super.onStart();
 
-        // TODO: 2022-02-15 새로 설치시 API 30 이하에서 첫 설치 후 실행 시 Don't ask again으로 되어있음 수정필요
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             if (!Environment.isExternalStorageManager()) {
                 popUpAlertDialogPermission();
             }
         } else if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_DENIED
                 || ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_DENIED) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                if (!(shouldShowRequestPermissionRationale(Manifest.permission.READ_EXTERNAL_STORAGE)
-                        & shouldShowRequestPermissionRationale(Manifest.permission.WRITE_EXTERNAL_STORAGE))) {
-                    popUpAlertDialogCantUseWithoutPermission();
-                } else {
-                    popUpAlertDialogPermission();
-                }
-            }
+            popUpAlertDialogPermission();
         }
     }
 
@@ -116,6 +110,24 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        if(grantResults[0] == PackageManager.PERMISSION_DENIED) {
+            if (!(shouldShowRequestPermissionRationale(Manifest.permission.READ_EXTERNAL_STORAGE)
+                    & shouldShowRequestPermissionRationale(Manifest.permission.WRITE_EXTERNAL_STORAGE))) {
+                popUpAlertDialogCantUseWithoutPermission();
+            } else {
+                finishAffinity();
+                /*
+                System.runFinalization();
+                System.exit(0);
+                 */
+            }
+        }
+    }
+
     public void popUpAlertDialogPermission() {
         /*
         // layout을 통해 AlertDialog를 구현하는 경우 사용
@@ -131,8 +143,8 @@ public class MainActivity extends AppCompatActivity {
             }
         });
         */
-
         AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+        AlertDialog alertDialog;
         builder.setTitle("Need permission!")
                 .setMessage("Need all file access permission to open txt files.");
         builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
@@ -157,27 +169,30 @@ public class MainActivity extends AppCompatActivity {
             }
         });
         builder.setCancelable(false);
-        builder.show();
+        alertDialog = builder.create();
+        alertDialog.show();
     }
 
     public void popUpAlertDialogCantUseWithoutPermission() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
-        builder.setTitle("Need Permission!")
-                .setMessage("You choose 'Don't ask again'.\n" +
-                        "You can't use this application without all file access permission.\n" +
-                        "To use this application, please go to 'Settings>>Apps>>txtViewerAndEditor' and allow the permission.");
-        builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
-                finishAffinity();
+            AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+            AlertDialog alertDialog;
+            builder.setTitle("Need Permission!")
+                    .setMessage("You choose 'Don't ask again'.\n" +
+                            "You can't use this application without 'all file access' permission.\n" +
+                            "To use this application, please go to 'Settings>>Apps>>txtViewerAndEditor' and allow the permission.");
+            builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
+                    finishAffinity();
                 /*
                 System.runFinalization();
                 System.exit(0);
                  */
-            }
-        });
-        builder.setCancelable(false);
-        builder.show();
+                }
+            });
+            builder.setCancelable(false);
+            alertDialog = builder.create();
+            alertDialog.show();
     }
 
     public String initTheme(String presentTheme, SharedPreferences.Editor editor) {

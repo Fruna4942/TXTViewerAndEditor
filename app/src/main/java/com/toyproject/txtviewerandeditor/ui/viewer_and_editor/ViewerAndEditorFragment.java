@@ -138,6 +138,13 @@ public class ViewerAndEditorFragment extends Fragment {
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+
+        isTextChanged = false;
+    }
+
+    @Override
     public void onPause() {
         super.onPause();
         onBackPressedCallback.setEnabled(false);
