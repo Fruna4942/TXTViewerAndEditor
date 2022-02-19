@@ -52,4 +52,7 @@ dependencies {
     def nav_version = "2.4.1"
     implementation "androidx.navigation:navigation-fragment:$nav_version"
     implementation "androidx.navigation:navigation-ui:$nav_version"
+
+    // https://mvnrepository.com/artifact/com.googlecode.juniversalchardet/juniversalchardet
+    implementation 'com.googlecode.juniversalchardet:juniversalchardet:1.0.3'
 }

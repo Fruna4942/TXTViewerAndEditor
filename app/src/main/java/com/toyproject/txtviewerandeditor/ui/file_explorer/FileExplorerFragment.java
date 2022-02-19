@@ -34,8 +34,8 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-// TODO: 2022-02-16 새로운 txt 파일 추가 구현
-public class FileExplorerFragment extends Fragment{
+// TODO: 2022-02-16 새로운 txt 파일 추가, 삭제 구현
+public class FileExplorerFragment extends Fragment {
 
     private FileExplorerViewModel fileExplorerViewModel;
     private FragmentFileExplorerBinding binding;
@@ -52,8 +52,7 @@ public class FileExplorerFragment extends Fragment{
                 //recyclerView.setAdapter(fileExplorerRecyclerViewAdapter);
                 //recyclerView.refreshDrawableState();
                 fileExplorerRecyclerViewAdapter.notifyDataSetChanged();
-            }
-            else {
+            } else {
                 NavDirections navDirections = FileExplorerFragmentDirections.actionNavFileExplorerToNavViewerAndEditor();
                 Navigation.findNavController(FileExplorerFragment.super.getView()).navigate(navDirections);
             }

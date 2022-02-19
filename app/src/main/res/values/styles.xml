@@ -5,4 +5,8 @@
         <item name="android:layout_height">1dp</item>
         <item name="android:background">?android:attr/listDivider</item>
     </style>
+    <style name="testStyle">
+        <item name="itemTextColor">#FFFFFFFF</item>
+        <item name="android:textColor">#FFFFFFFF</item> // replace this value with your desired menu item color.
+    </style>
 </resources>

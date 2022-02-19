@@ -30,24 +30,41 @@ import com.google.android.material.navigation.NavigationView;
 import com.toyproject.txtviewerandeditor.databinding.ActivityMainBinding;
 import com.toyproject.txtviewerandeditor.databinding.ContentMainBinding;
 
+// TODO: 2022-02-17 테마 다듬기 
 public class MainActivity extends AppCompatActivity {
 
     private AppBarConfiguration mAppBarConfiguration;
     private ActivityMainBinding binding;
+
+    ContentMainBinding contentMainBinding;
+    ConstraintLayout constraintLayout;
     private DrawerLayout drawerLayout;
+    NavigationView navigationView;
+    Toolbar toolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        SharedPreferences sharedPreferences = getSharedPreferences(getString(R.string.preference_file_key), Context.MODE_PRIVATE);
+        String presentTheme = initTheme(sharedPreferences.getString(getString(R.string.theme), null), sharedPreferences.edit());
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q)
+            setThemeFromAPI29(presentTheme);
+
         super.onCreate(savedInstanceState);
 
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
         setSupportActionBar(binding.appBarMain.toolbar);
 
-        NavigationView navigationView;
-
+        contentMainBinding = binding.appBarMain.contentMain;
+        constraintLayout = contentMainBinding.getRoot();
         drawerLayout = binding.drawerLayout;
         navigationView = binding.navView;
+        toolbar = binding.appBarMain.toolbar;
+
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
+            setThemeUnderAPI29(presentTheme);
+        }
 
         // Passing each menu ID as a set of Ids because each
         // menu should be considered as top level destinations.
@@ -58,12 +75,6 @@ public class MainActivity extends AppCompatActivity {
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_content_main);
         NavigationUI.setupActionBarWithNavController(this, navController, mAppBarConfiguration);
         NavigationUI.setupWithNavController(navigationView, navController);
-
-        SharedPreferences sharedPreferences = getSharedPreferences(getString(R.string.preference_file_key), Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        String presentTheme = sharedPreferences.getString(getString(R.string.theme), null);
-
-        setTheme(presentTheme, editor, navigationView);
     }
 
     @Override
@@ -105,15 +116,6 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    /*
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.main, menu);
-        return true;
-    }
-     */
-
     public void popUpAlertDialogPermission() {
         /*
         // layout을 통해 AlertDialog를 구현하는 경우 사용
@@ -129,7 +131,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
         */
-        
+
         AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
         builder.setTitle("Need permission!")
                 .setMessage("Need all file access permission to open txt files.");
@@ -178,47 +180,44 @@ public class MainActivity extends AppCompatActivity {
         builder.show();
     }
 
-    public void setTheme(String presentTheme, SharedPreferences.Editor editor, NavigationView navigationView) {
-        ContentMainBinding contentMainBinding = binding.appBarMain.contentMain;
-
-        Toolbar toolbar;
-        ConstraintLayout constraintLayout;
-
-        toolbar = binding.appBarMain.toolbar;
-        constraintLayout = contentMainBinding.getRoot();
-
+    public String initTheme(String presentTheme, SharedPreferences.Editor editor) {
         if (presentTheme == null) {
             presentTheme = getString(R.string.theme_dark);
             editor.putString(getString(R.string.theme), getString(R.string.theme_dark));
             editor.apply();
         }
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            if (presentTheme.equals(getString(R.string.theme_dark))) {
-                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
-            } else if (presentTheme.equals(getString(R.string.theme_light))) {
-                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
-            }
-        } else {
-            if (presentTheme.equals(getString(R.string.theme_dark))) {
-                toolbar.setBackgroundColor(getColor(R.color.primary_dark));
-                constraintLayout.setBackgroundColor(getColor(R.color.background_dark));
-                getWindow().setStatusBarColor(getColor(R.color.primary_variant_dark));
-                navigationView.setBackgroundColor(getColor(R.color.background_dark));
-                navigationView.setItemTextColor(getColorStateList(R.color.color_state_list_dark));
-                navigationView.setItemIconTintList(getColorStateList(R.color.color_state_list_dark));
-                navigationView.setItemBackground(getDrawable(R.drawable.nav_view_item_background_dark));
-                //setTheme(R.style.Theme_Dark_TxtViewerAndEditor);
-            } else if (presentTheme.equals(getString(R.string.theme_light))) {
-                toolbar.setBackgroundColor(getColor(R.color.primary_light));
-                constraintLayout.setBackgroundColor(getColor(R.color.background_light));
-                getWindow().setStatusBarColor(getColor(R.color.primary_variant_light));
-                navigationView.setBackgroundColor(getColor(R.color.background_light));
-                navigationView.setItemTextColor(getColorStateList(R.color.color_state_list_light));
-                navigationView.setItemIconTintList(getColorStateList(R.color.color_state_list_light));
-                navigationView.setItemBackground(getDrawable(R.drawable.nav_view_item_background_light));
-                //setTheme(R.style.Theme_Light_TxtViewerAndEditor);
-            }
+        return presentTheme;
+    }
+
+    public void setThemeFromAPI29(String presentTheme) {
+        if (presentTheme.equals(getString(R.string.theme_dark))) {
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+        } else if (presentTheme.equals(getString(R.string.theme_light))) {
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+        }
+
+    }
+    public void setThemeUnderAPI29(String presentTheme) {
+        if (presentTheme.equals(getString(R.string.theme_dark))) {
+            toolbar.setBackgroundColor(getColor(R.color.primary_dark));
+            constraintLayout.setBackgroundColor(getColor(R.color.background_dark));
+            getWindow().setStatusBarColor(getColor(R.color.primary_variant_dark));
+            navigationView.setBackgroundColor(getColor(R.color.background_dark));
+            navigationView.setItemTextColor(getColorStateList(R.color.color_state_list_dark));
+            navigationView.setItemIconTintList(getColorStateList(R.color.color_state_list_dark));
+            navigationView.setItemBackground(getDrawable(R.drawable.nav_view_item_background_dark));
+            //setTheme(R.style.Theme_Dark_TxtViewerAndEditor);
+        } else if (presentTheme.equals(getString(R.string.theme_light))) {
+            toolbar.setBackgroundColor(getColor(R.color.primary_light));
+            constraintLayout.setBackgroundColor(getColor(R.color.background_light));
+            getWindow().setStatusBarColor(getColor(R.color.primary_variant_light));
+            navigationView.setBackgroundColor(getColor(R.color.background_light));
+            navigationView.setItemTextColor(getColorStateList(R.color.color_state_list_light));
+            navigationView.setItemIconTintList(getColorStateList(R.color.color_state_list_light));
+            navigationView.setItemBackground(getDrawable(R.drawable.nav_view_item_background_light));
+            //setTheme(R.style.Theme_Light_TxtViewerAndEditor);
         }
     }
+
 }
