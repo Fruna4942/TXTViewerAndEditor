@@ -13,8 +13,7 @@
 
     <string name="preference_file_key">com.toyproject.txtviewerandeditor</string>
 
-    <string name="present_file">Present text file</string>
-    <string name="present_file_default_value">Not selected</string>
+    <string name="file_path">FilePath</string>
 
     <string name="theme">Theme</string>
     <string name="theme_dark">DarkTheme</string>
@@ -24,4 +23,10 @@
     <string name="alphabet">ABCDEFGHIJKLMNOPQRSTUVWXYZ\nabcdefghijklmnopqrstuvwxyz\n</string>
 
     <string name="text_size">TextSize</string>
+
+    <string name="new_text_file">New text file</string>
+    <string name="new_file_name">File name</string>
+
+    <string name="new_folder">New folder</string>
+    <string name="new_folder_name">Folder name</string>
 </resources>

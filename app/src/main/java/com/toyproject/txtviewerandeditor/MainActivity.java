@@ -1,7 +1,6 @@
 package com.toyproject.txtviewerandeditor;
 
 import android.Manifest;
-import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -49,6 +48,7 @@ public class MainActivity extends AppCompatActivity {
         SharedPreferences sharedPreferences = getSharedPreferences(getString(R.string.preference_file_key), Context.MODE_PRIVATE);
         String presentTheme = initTheme(sharedPreferences.getString(getString(R.string.theme), null), sharedPreferences.edit());
 
+        // Dark Theme 을 지원하는 버전이면  Activity 시작 전 Theme 변경 후 재시작
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q)
             setThemeFromAPI29(presentTheme);
 
@@ -83,6 +83,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
 
+        // 권한 획득
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             if (!Environment.isExternalStorageManager()) {
                 popUpAlertDialogPermission();
@@ -114,6 +115,7 @@ public class MainActivity extends AppCompatActivity {
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 
+        // 권한 거부 시 'Don't ask again' 을 체크한 상태이면 안내 후 종료
         if(grantResults[0] == PackageManager.PERMISSION_DENIED) {
             if (!(shouldShowRequestPermissionRationale(Manifest.permission.READ_EXTERNAL_STORAGE)
                     & shouldShowRequestPermissionRationale(Manifest.permission.WRITE_EXTERNAL_STORAGE))) {

@@ -1,22 +1,27 @@
 package com.toyproject.txtviewerandeditor.ui.file_explorer;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.SharedPreferences;
-import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.MimeTypeMap;
-import android.widget.ListView;
+import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
-import androidx.core.content.ContextCompat;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavDirections;
@@ -28,9 +33,10 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.toyproject.txtviewerandeditor.R;
 import com.toyproject.txtviewerandeditor.databinding.FragmentFileExplorerBinding;
 
-import org.w3c.dom.Text;
+import org.apache.commons.io.FileUtils;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -43,12 +49,12 @@ public class FileExplorerFragment extends Fragment {
     private final OnBackPressedCallback onBackPressedCallback = new OnBackPressedCallback(true) {
         @Override
         public void handleOnBackPressed() {
-            String presentPath = fileExplorerRecyclerViewAdapter.getPresentPath();
-            if (!presentPath.equals(Environment.getExternalStorageDirectory().getPath())) {
-                File file = new File(presentPath);
+            String filePath = fileExplorerRecyclerViewAdapter.getFilePath();
+            if (!filePath.equals(Environment.getExternalStorageDirectory().getPath())) {
+                File file = new File(filePath);
                 File parentFile = file.getParentFile();
-                presentPath = parentFile.getPath();
-                fileExplorerRecyclerViewAdapter.changeDirectory(presentPath, getFileExplorerRecyclerViewItemList(presentPath));
+                String newFilePath = parentFile.getPath();
+                fileExplorerRecyclerViewAdapter.changeDirectory(newFilePath, getFileExplorerRecyclerViewItemList(newFilePath));
                 //recyclerView.setAdapter(fileExplorerRecyclerViewAdapter);
                 //recyclerView.refreshDrawableState();
                 fileExplorerRecyclerViewAdapter.notifyDataSetChanged();
@@ -61,19 +67,20 @@ public class FileExplorerFragment extends Fragment {
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
+        setHasOptionsMenu(true);
         fileExplorerViewModel =
                 new ViewModelProvider(this).get(FileExplorerViewModel.class);
 
         binding = FragmentFileExplorerBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
 
-        String presentPath = Environment.getExternalStorageDirectory().getPath();
+        String filePath = Environment.getExternalStorageDirectory().getPath();
         SharedPreferences sharedPreferences = getActivity().getSharedPreferences(getString(R.string.preference_file_key), Context.MODE_PRIVATE);
         String presentTheme = sharedPreferences.getString(getString(R.string.theme), getString(R.string.theme_dark));
 
         RecyclerView recyclerView;
 
-        fileExplorerRecyclerViewAdapter = new FileExplorerRecyclerViewAdapter(presentPath, getFileExplorerRecyclerViewItemList(presentPath));
+        fileExplorerRecyclerViewAdapter = new FileExplorerRecyclerViewAdapter(filePath, getFileExplorerRecyclerViewItemList(filePath));
 
         recyclerView = binding.recyclerView;
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
@@ -85,18 +92,18 @@ public class FileExplorerFragment extends Fragment {
         fileExplorerRecyclerViewAdapter.setOnItemClickListener(new FileExplorerRecyclerViewAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(View view, int pos) {
-                String presentPath = fileExplorerRecyclerViewAdapter.getRecyclerViewItemArrayList().get(pos).getFile().getPath();
+                String newFilePath = fileExplorerRecyclerViewAdapter.getRecyclerViewItemArrayList().get(pos).getFile().getPath();
 
-                File file = new File(presentPath);
+                File file = new File(newFilePath);
                 if (file.isDirectory()) {
-                    fileExplorerRecyclerViewAdapter.changeDirectory(presentPath, getFileExplorerRecyclerViewItemList(presentPath));
+                    fileExplorerRecyclerViewAdapter.changeDirectory(newFilePath, getFileExplorerRecyclerViewItemList(newFilePath));
                     //recyclerView.setAdapter(fileExplorerRecyclerViewAdapter);
                     //recyclerView.refreshDrawableState();
                     fileExplorerRecyclerViewAdapter.notifyDataSetChanged();
                 } else if (MimeTypeMap.getFileExtensionFromUrl(Uri.fromFile(file).toString()).equals("txt")) {
                     SharedPreferences sharedPreferences = getActivity().getSharedPreferences(getString(R.string.preference_file_key), Context.MODE_PRIVATE);
                     SharedPreferences.Editor editor = sharedPreferences.edit();
-                    editor.putString(getString(R.string.present_file), file.getPath());
+                    editor.putString(getString(R.string.file_path), file.getPath());
                     editor.apply();
 
                     NavDirections navDirections = FileExplorerFragmentDirections.actionNavFileExplorerToNavViewerAndEditor();
@@ -131,9 +138,106 @@ public class FileExplorerFragment extends Fragment {
         binding = null;
     }
 
-    public ArrayList<FileExplorerRecyclerViewItem> getFileExplorerRecyclerViewItemList(String presentPath) {
+    @Override
+    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        inflater.inflate(R.menu.menu_add_file_and_folder, menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        LayoutInflater layoutInflater = requireActivity().getLayoutInflater();
+        ConstraintLayout constraintLayout = (ConstraintLayout) layoutInflater.inflate(R.layout.dialog_one_input, null);
+
+        switch (item.getItemId()) {
+            case R.id.menu_add_file:
+                AlertDialog.Builder builderAddFile = new AlertDialog.Builder(getContext());
+                builderAddFile.setView(constraintLayout)
+                        .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                            }
+                        })
+                        .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                String presentPath = fileExplorerRecyclerViewAdapter.getFilePath();
+                                EditText editText = constraintLayout.findViewById(R.id.edit_dialog_one_input);
+                                String filePath = presentPath + "/" + editText.getText() + ".txt";
+                                File file = new File(filePath);
+
+                                if (file.exists()) {
+                                    System.out.println(filePath + " : already exits");
+                                    Toast toast = Toast.makeText(getContext(), "File '" + editText.getText() + ".txt' already exits", Toast.LENGTH_SHORT);
+                                    toast.show();
+                                } else {
+                                    new Thread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            try {
+                                                FileUtils.write(file, null, (String) null);
+                                            } catch (IOException e) {
+                                                e.printStackTrace();
+                                            }
+                                        }
+                                    }).start();
+                                }
+                            }
+                        });
+                AlertDialog alertDialogAddFile = builderAddFile.create();
+                alertDialogAddFile.show();
+                break;
+            case R.id.menu_add_folder:
+                TextView textViewTitle = (TextView) constraintLayout.findViewById(R.id.title_dialog_one_input);
+                TextView textViewMessage = (TextView) constraintLayout.findViewById(R.id.message_dialog_one_input);
+
+                textViewTitle.setText(getString(R.string.new_folder));
+                textViewMessage.setText(getString(R.string.new_folder_name));
+
+                AlertDialog.Builder builderAddFolder = new AlertDialog.Builder(getContext());
+                builderAddFolder.setView(constraintLayout)
+                        .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                            }
+                        })
+                        .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                String presentPath = fileExplorerRecyclerViewAdapter.getFilePath();
+                                EditText editText = constraintLayout.findViewById(R.id.edit_dialog_one_input);
+                                String filePath = presentPath + "/" + editText.getText();
+                                File file = new File(filePath);
+
+                                if (file.exists()) {
+                                    System.out.println(filePath + " : already exits");
+                                    Toast toast = Toast.makeText(getContext(), "Folder '" + editText.getText() + "' already exits", Toast.LENGTH_SHORT);
+                                    toast.show();
+                                } else {
+                                    new Thread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            try {
+                                                FileUtils.forceMkdir(file);
+                                            } catch (IOException e) {
+                                                e.printStackTrace();
+                                            }
+                                        }
+                                    }).start();
+                                }
+                            }
+                        });
+                AlertDialog alertDialogAddFolder = builderAddFolder.create();
+                alertDialogAddFolder.show();
+                break;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
+    public ArrayList<FileExplorerRecyclerViewItem> getFileExplorerRecyclerViewItemList(String filePath) {
         ArrayList<FileExplorerRecyclerViewItem> fileExplorerRecyclerViewItemArrayList = new ArrayList<>();
-        File presentFile = new File(presentPath);
+        File presentFile = new File(filePath);
         File[] presentFileList = presentFile.listFiles();
 
         if (presentFile.exists()) {

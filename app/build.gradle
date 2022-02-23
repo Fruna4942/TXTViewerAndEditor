@@ -55,4 +55,8 @@ dependencies {
 
     // https://mvnrepository.com/artifact/com.googlecode.juniversalchardet/juniversalchardet
     implementation 'com.googlecode.juniversalchardet:juniversalchardet:1.0.3'
+
+// https://mvnrepository.com/artifact/commons-io/commons-io
+    implementation 'commons-io:commons-io:2.7'
+
 }

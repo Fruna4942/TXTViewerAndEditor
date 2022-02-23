@@ -2,6 +2,7 @@ package com.toyproject.txtviewerandeditor.ui.setting;
 
 import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Build;

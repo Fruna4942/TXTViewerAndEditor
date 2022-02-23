@@ -30,15 +30,15 @@ import androidx.lifecycle.ViewModelProvider;
 import com.toyproject.txtviewerandeditor.R;
 import com.toyproject.txtviewerandeditor.databinding.FragmentViewerAndEditorBinding;
 
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.mozilla.universalchardet.UniversalDetector;
 
-import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.Objects;
 
 import lombok.SneakyThrows;
@@ -59,7 +59,9 @@ public class ViewerAndEditorFragment extends Fragment {
     };
 
     SharedPreferences sharedPreferences;
-    String presentFile;
+
+    String filePath = null;
+    String fileEncoding = null;
     private boolean editable;
     private boolean isTextChanged = false;
 
@@ -78,7 +80,11 @@ public class ViewerAndEditorFragment extends Fragment {
         View root = binding.getRoot();
 
         sharedPreferences = getActivity().getSharedPreferences(getString(R.string.preference_file_key), Context.MODE_PRIVATE);
-        presentFile = setPresentFile(sharedPreferences);
+
+        filePath = sharedPreferences.getString(getString(R.string.file_path), null);
+        if (filePath != null) {
+            fileEncoding = getCharset(filePath);
+        }
         editable = sharedPreferences.getBoolean(getString(R.string.editable), false);
 
         scrollViewText = binding.scrollTextViewerAndEditor;
@@ -99,7 +105,7 @@ public class ViewerAndEditorFragment extends Fragment {
 
         // TODO: 2022-02-19 더 빠른 읽기 및 setText 방법 찾기
         // FileExplorer에서 지정된 파일에 따라 파일을 읽어 화면에 표시
-        if (presentFile.equals(getString(R.string.present_file_default_value))) {
+        if (filePath == null) {
             //crollViewEditText.setVisibility(View.GONE);
             //scrollViewText.setVisibility(View.VISIBLE);
             setTextPleaseSelect(scrollViewText, textView);
@@ -107,11 +113,11 @@ public class ViewerAndEditorFragment extends Fragment {
             if (editable) {
                 scrollViewText.setVisibility(View.GONE);
                 scrollViewEditText.setVisibility(View.VISIBLE);
-                setEditText(presentFile);
+                setEditText(filePath);
             } else {
                 //scrollViewEditText.setVisibility(View.GONE);
                 //scrollViewText.setVisibility(View.VISIBLE);
-                setTextView(presentFile);
+                setTextView(filePath);
             }
         }
 
@@ -160,33 +166,26 @@ public class ViewerAndEditorFragment extends Fragment {
     public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
 
-        boolean editable;
-
-        editable = sharedPreferences.getBoolean(getString(R.string.editable), false);
-
-        if (!presentFile.equals(getString(R.string.present_file_default_value)))
+        if (filePath != null)
             if (editable)
-                inflater.inflate(R.menu.menu_toolbar, menu);
+                inflater.inflate(R.menu.menu_save_toolbar, menu);
     }
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
             case R.id.menu_save:
-                String text;
-                File file;
-                BufferedWriter bufferedWriter;
-
-                text = editText.getText().toString();
-                file = new File(presentFile);
-                try {
-                    bufferedWriter = new BufferedWriter(new FileWriter(file));
-                    bufferedWriter.write(text);
-                    bufferedWriter.close();
-                    isTextChanged = false;
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            FileUtils.write(new File(filePath), editText.getText(), fileEncoding);
+                            isTextChanged = false;
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }).start();
                 break;
             default:
                 if (isTextChanged) {
@@ -210,7 +209,7 @@ public class ViewerAndEditorFragment extends Fragment {
                                     BufferedWriter bufferedWriter;
 
                                     text = editText.getText().toString();
-                                    file = new File(presentFile);
+                                    file = new File(filePath);
                                     try {
                                         bufferedWriter = new BufferedWriter(new FileWriter(file));
                                         bufferedWriter.write(text);
@@ -265,20 +264,6 @@ public class ViewerAndEditorFragment extends Fragment {
         }
     }
 
-    private String setPresentFile(SharedPreferences sharedPreferences) {
-        String presentFile = sharedPreferences.getString(getString(R.string.present_file), getString(R.string.present_file_default_value));
-
-        File file = new File(presentFile);
-        if (!file.exists()) {
-            SharedPreferences.Editor editor = sharedPreferences.edit();
-            editor.putString(getString(R.string.present_file), getString(R.string.present_file_default_value));
-            editor.apply();
-
-            presentFile = getString(R.string.present_file_default_value);
-        }
-        return presentFile;
-    }
-
     private void setTextPleaseSelect(ScrollView scrollView, TextView textView) {
         scrollView.setFillViewport(true);
         textView.setGravity(Gravity.CENTER);
@@ -292,116 +277,50 @@ public class ViewerAndEditorFragment extends Fragment {
         textView.setTextSize(textSize);
         //textView.setGravity(Gravity.NO_GRAVITY);
 
-        Runnable runnable = new Runnable() {
+        new Thread(new Runnable() {
             @Override
             public void run() {
-                getActivity().runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        try {
-                            String charset = getCharset(presentFile);
-                            BufferedReader bufferedReader;
-
-                            if (charset != null)
-                                bufferedReader = new BufferedReader(new InputStreamReader(new FileInputStream(presentFile), charset));
-                            else
-                                bufferedReader = new BufferedReader(new InputStreamReader(new FileInputStream(presentFile)));
-
-                            long start, middle, end;
-                            start = System.currentTimeMillis();
-
-                            /*
-                            String bufferReadLine;
-                            StringBuilder stringBuilder = new StringBuilder();
-                            while ((bufferReadLine = bufferedReader.readLine()) != null) {
-                                textView.append(bufferReadLine + "\n");
-                            }
-                            //String strTemp = textView.getText().toString();
-                            //textView.setText(strTemp.substring(0, strTemp.length() - 1));
-                            end = System.currentTimeMillis();
-                            System.out.println("읽기끝 : " + (end - start) / 1000.0 + "sec");
-                             */
-
-                            String bufferReadLine;
-                            StringBuilder stringBuilder = new StringBuilder();
-                            while ((bufferReadLine = bufferedReader.readLine()) != null) {
-                                stringBuilder.append(bufferReadLine + "\n");
-                            }
-                            stringBuilder.setLength(stringBuilder.length() - 1);
-
-                            middle = System.currentTimeMillis();
-                            System.out.println("읽기끝 : " + (middle - start) / 1000.0 + "sec");
-
-                            textView.setText(stringBuilder);
-
-                            end = System.currentTimeMillis();
-                            System.out.println("setText 끝 : " + (end - middle) / 1000.0 + "sec");
-                        } catch (IOException e) {
-                            e.printStackTrace();
+                try {
+                    final FileInputStream fileInputStream = new FileInputStream(new File(presentFile));
+                    final String fileText = IOUtils.toString(fileInputStream, getCharset(presentFile));
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            textView.setText(fileText);
                         }
-                    }
-                });
+                    });
+                    fileInputStream.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
-        };
-        Thread thread = new Thread(runnable);
-        thread.start();
+        }).start();
     }
 
     private void setEditText(String presentFile) {
         int textSize = sharedPreferences.getInt(getString(R.string.text_size), 20);
 
         editText.setTextSize(textSize);
-        //editText.setGravity(Gravity.NO_GRAVITY);
-        Runnable runnable = new Runnable() {
+
+        new Thread(new Runnable() {
             @Override
             public void run() {
-                getActivity().runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        try {
-                            String charset = getCharset(presentFile);
-                            BufferedReader bufferedReader;
-
-                            if (charset != null)
-                                bufferedReader = new BufferedReader(new InputStreamReader(new FileInputStream(presentFile), charset));
-                            else
-                                bufferedReader = new BufferedReader(new InputStreamReader(new FileInputStream(presentFile)));
-
-                            long start, end;
-                            start = System.currentTimeMillis();
-                            System.out.println("읽기시작");
-
-                            /*
-                            String bufferReadLine;
-                            StringBuilder stringBuilder = new StringBuilder();
-                            while ((bufferReadLine = bufferedReader.readLine()) != null) {
-                                editText.append(bufferReadLine + "\n");
-                            }
-                            String strTemp = editText.getText().toString();
-                            editText.setText(strTemp.substring(0, strTemp.length() - 1));
-                            */
-
-                            String bufferReadLine;
-                            StringBuilder stringBuilder = new StringBuilder();
-                            while ((bufferReadLine = bufferedReader.readLine()) != null) {
-                                stringBuilder.append(bufferReadLine + "\n");
-                            }
-                            stringBuilder.setLength(stringBuilder.length() - 1);
-                            editText.setText(stringBuilder);
-
-                            end = System.currentTimeMillis();
-                            System.out.println("읽기 & setText 끝 : " + (end - start) / 1000.0 + "sec");
-
+                try {
+                    final FileInputStream fileInputStream = new FileInputStream(new File(presentFile));
+                    final String fileText = IOUtils.toString(fileInputStream, getCharset(presentFile));
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            editText.setText(fileText);
                             isTextChanged = false;
-                        } catch (IOException e) {
-                            e.printStackTrace();
                         }
-                    }
-                });
+                    });
+                    fileInputStream.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
-        };
-        Thread thread = new Thread(runnable);
-        thread.start();
+        }).start();
     }
 
     @SneakyThrows

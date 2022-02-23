@@ -1,6 +1,6 @@
 package com.toyproject.txtviewerandeditor.ui.file_explorer;
 
-import android.annotation.SuppressLint;
+import android.app.AlertDialog;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Build;
@@ -11,12 +11,11 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.RequiresApi;
-import androidx.appcompat.app.AppCompatDelegate;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.toyproject.txtviewerandeditor.R;
 
+import java.io.File;
 import java.util.ArrayList;
 
 public class FileExplorerRecyclerViewAdapter extends RecyclerView.Adapter<FileExplorerRecyclerViewAdapter.ViewHolder> {
@@ -25,17 +24,17 @@ public class FileExplorerRecyclerViewAdapter extends RecyclerView.Adapter<FileEx
         void onItemClick(View view, int pos);
     }
 
-    private String presentPath;
+    private String filePath;
     private ArrayList<FileExplorerRecyclerViewItem> fileExplorerRecyclerViewItemArrayList;
     private OnItemClickListener onItemClickListener;
 
     public FileExplorerRecyclerViewAdapter(String presentPath, ArrayList<FileExplorerRecyclerViewItem> fileExplorerRecyclerViewItemArrayList) {
-        this.presentPath = presentPath;
+        this.filePath = presentPath;
         this.fileExplorerRecyclerViewItemArrayList = fileExplorerRecyclerViewItemArrayList;
     }
 
-    public String getPresentPath() {
-        return presentPath;
+    public String getFilePath() {
+        return filePath;
     }
 
     public ArrayList<FileExplorerRecyclerViewItem> getRecyclerViewItemArrayList() {
@@ -43,7 +42,7 @@ public class FileExplorerRecyclerViewAdapter extends RecyclerView.Adapter<FileEx
     }
 
     public void changeDirectory(String presentPath, ArrayList<FileExplorerRecyclerViewItem> fileExplorerRecyclerViewItemArrayList) {
-        this.presentPath = presentPath;
+        this.filePath = presentPath;
         this.fileExplorerRecyclerViewItemArrayList = fileExplorerRecyclerViewItemArrayList;
     }
 
@@ -67,6 +66,21 @@ public class FileExplorerRecyclerViewAdapter extends RecyclerView.Adapter<FileEx
                     if (onItemClickListener != null) {
                         onItemClickListener.onItemClick(view, getAdapterPosition());
                     }
+                }
+            });
+            view.setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View view) {
+                    FileExplorerRecyclerViewItem fileExplorerRecyclerViewItem = fileExplorerRecyclerViewItemArrayList.get(getAdapterPosition());
+
+                    File file = fileExplorerRecyclerViewItem.getFile();
+
+                    System.out.println(fileExplorerRecyclerViewItem.getFile().getPath());
+                    AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
+                    builder.setTitle("on long click");
+                    builder.show();
+
+                    return false;
                 }
             });
         }

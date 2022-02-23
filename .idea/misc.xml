@@ -57,16 +57,22 @@
         <entry key="..\:/Programming Lecture/AndroidStudio/projects/txtViewerAndEditor/txtViewerAndEditor/app/src/main/res/layout/activity_main.xml" value="0.2046875" />
         <entry key="..\:/Programming Lecture/AndroidStudio/projects/txtViewerAndEditor/txtViewerAndEditor/app/src/main/res/layout/app_bar_main.xml" value="0.2046875" />
         <entry key="..\:/Programming Lecture/AndroidStudio/projects/txtViewerAndEditor/txtViewerAndEditor/app/src/main/res/layout/content_main.xml" value="0.2046875" />
+        <entry key="..\:/Programming Lecture/AndroidStudio/projects/txtViewerAndEditor/txtViewerAndEditor/app/src/main/res/layout/dialog_add_folder.xml" value="0.33" />
+        <entry key="..\:/Programming Lecture/AndroidStudio/projects/txtViewerAndEditor/txtViewerAndEditor/app/src/main/res/layout/dialog_one_input.xml" value="0.19829059829059828" />
         <entry key="..\:/Programming Lecture/AndroidStudio/projects/txtViewerAndEditor/txtViewerAndEditor/app/src/main/res/layout/dialog_text_size.xml" value="0.3004273504273504" />
         <entry key="..\:/Programming Lecture/AndroidStudio/projects/txtViewerAndEditor/txtViewerAndEditor/app/src/main/res/layout/fragment_file_explorer.xml" value="0.19021739130434784" />
         <entry key="..\:/Programming Lecture/AndroidStudio/projects/txtViewerAndEditor/txtViewerAndEditor/app/src/main/res/layout/fragment_setting.xml" value="0.3004273504273504" />
-        <entry key="..\:/Programming Lecture/AndroidStudio/projects/txtViewerAndEditor/txtViewerAndEditor/app/src/main/res/layout/fragment_viewer_and_editor.xml" value="0.19375" />
+        <entry key="..\:/Programming Lecture/AndroidStudio/projects/txtViewerAndEditor/txtViewerAndEditor/app/src/main/res/layout/fragment_viewer_and_editor.xml" value="0.1" />
+        <entry key="..\:/Programming Lecture/AndroidStudio/projects/txtViewerAndEditor/txtViewerAndEditor/app/src/main/res/layout/frame.xml" value="0.3004273504273504" />
         <entry key="..\:/Programming Lecture/AndroidStudio/projects/txtViewerAndEditor/txtViewerAndEditor/app/src/main/res/layout/item_list_view_setting.xml" value="0.18547008547008548" />
         <entry key="..\:/Programming Lecture/AndroidStudio/projects/txtViewerAndEditor/txtViewerAndEditor/app/src/main/res/layout/item_recycler_view_file_explorer.xml" value="0.19021739130434784" />
+        <entry key="..\:/Programming Lecture/AndroidStudio/projects/txtViewerAndEditor/txtViewerAndEditor/app/src/main/res/layout/linear.xml" value="0.1952991452991453" />
         <entry key="..\:/Programming Lecture/AndroidStudio/projects/txtViewerAndEditor/txtViewerAndEditor/app/src/main/res/layout/nav_header_main.xml" value="0.23697916666666666" />
         <entry key="..\:/Programming Lecture/AndroidStudio/projects/txtViewerAndEditor/txtViewerAndEditor/app/src/main/res/layout/test_dialog.xml" value="0.3004273504273504" />
         <entry key="..\:/Programming Lecture/AndroidStudio/projects/txtViewerAndEditor/txtViewerAndEditor/app/src/main/res/menu/activity_main_drawer.xml" value="0.5635416666666667" />
         <entry key="..\:/Programming Lecture/AndroidStudio/projects/txtViewerAndEditor/txtViewerAndEditor/app/src/main/res/menu/main.xml" value="0.23697916666666666" />
+        <entry key="..\:/Programming Lecture/AndroidStudio/projects/txtViewerAndEditor/txtViewerAndEditor/app/src/main/res/menu/menu_add_file_and_folder.xml" value="0.3004273504273504" />
+        <entry key="..\:/Programming Lecture/AndroidStudio/projects/txtViewerAndEditor/txtViewerAndEditor/app/src/main/res/menu/menu_save_toolbar.xml" value="0.1952991452991453" />
         <entry key="..\:/Programming Lecture/AndroidStudio/projects/txtViewerAndEditor/txtViewerAndEditor/app/src/main/res/menu/menu_toolbar.xml" value="0.16495726495726495" />
         <entry key="..\:/Programming Lecture/AndroidStudio/projects/txtViewerAndEditor/txtViewerAndEditor/app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml" value="0.22135416666666666" />
         <entry key="..\:/Users/Fruna/Documents/Projects/AndroidStudio/txtViewerAndEditor/app/src/main/res/drawable/ic_baseline_settings_24_black.xml" value="0.183" />

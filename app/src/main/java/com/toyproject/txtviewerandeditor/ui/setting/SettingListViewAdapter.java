@@ -12,10 +12,8 @@ import android.widget.CompoundButton;
 import android.widget.Switch;
 import android.widget.TextView;
 
-import androidx.appcompat.app.AppCompatDelegate;
 import androidx.core.app.ActivityCompat;
 
-import com.toyproject.txtviewerandeditor.MainActivity;
 import com.toyproject.txtviewerandeditor.R;
 
 import java.util.ArrayList;
