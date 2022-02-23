@@ -83,7 +83,13 @@ public class FileExplorerRecyclerViewAdapter extends RecyclerView.Adapter<FileEx
 
                     File file = fileExplorerRecyclerViewItem.getFile();
                     String fileName = file.getName();
+                    String filePath = file.getPath();
                     String parentFilePath = file.getParent();
+
+                    Context context = view.getContext();
+                    SharedPreferences sharedPreferences = context.getSharedPreferences(context.getString(R.string.preference_file_key), Context.MODE_PRIVATE);
+                    SharedPreferences.Editor editor = sharedPreferences.edit();
+                    String preferenceFilePath = sharedPreferences.getString(context.getString(R.string.file_path), null);
 
                     AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
                     builder.setTitle(fileName)
@@ -97,7 +103,7 @@ public class FileExplorerRecyclerViewAdapter extends RecyclerView.Adapter<FileEx
                                     EditText editText = constraintLayout.findViewById(R.id.edit_dialog_one_input);
 
                                     switch (i) {
-                                        case 0:
+                                        case 0: // Rename
                                             textViewTitle.setText(view.getContext().getString(R.string.rename));
                                             if (file.isDirectory()) {
                                                 textViewMessage.setText(view.getContext().getString(R.string.new_folder_name));
@@ -119,18 +125,30 @@ public class FileExplorerRecyclerViewAdapter extends RecyclerView.Adapter<FileEx
                                                     }).setPositiveButton("Ok", new DialogInterface.OnClickListener() {
                                                         @Override
                                                         public void onClick(DialogInterface dialogInterface, int i) {
+                                                            String rename = editText.getText().toString();
                                                             try {
                                                                 File fileRenameTo;
+                                                                String renamePath;
                                                                 if (file.isDirectory()) {
-                                                                    fileRenameTo = new File(parentFilePath + "/" + editText.getText());
+                                                                    renamePath = parentFilePath + "/" + rename;
+                                                                    fileRenameTo = new File(renamePath);
                                                                     FileUtils.moveDirectory(file, fileRenameTo);
                                                                 } else {
-                                                                    fileRenameTo = new File(parentFilePath + "/" + editText.getText() + ".txt");
+                                                                    renamePath = parentFilePath + "/" + rename + ".txt";
+                                                                    fileRenameTo = new File(renamePath);
                                                                     FileUtils.moveFile(file, fileRenameTo);
+                                                                }
+
+                                                                if (preferenceFilePath != null) {
+                                                                    if (filePath.equals(preferenceFilePath)) {
+                                                                        editor.putString(context.getString(R.string.file_path), renamePath);
+                                                                        editor.apply();
+                                                                    }
                                                                 }
                                                             } catch (IOException e) {
                                                                 e.printStackTrace();
                                                             }
+
                                                             updateDirectory(parentFilePath, FileExplorerFragment.getFileExplorerRecyclerViewItemList(parentFilePath));
                                                             FileExplorerRecyclerViewAdapter.super.notifyDataSetChanged();
                                                         }
@@ -138,7 +156,7 @@ public class FileExplorerRecyclerViewAdapter extends RecyclerView.Adapter<FileEx
                                             AlertDialog alertDialogRename = builderRename.create();
                                             alertDialogRename.show();
                                             break;
-                                        case 1:
+                                        case 1: // Delete
                                             AlertDialog.Builder builderDelete = new AlertDialog.Builder(view.getContext());
                                             if (file.isDirectory()) {
                                                 builderDelete.setMessage("Delete folder \"" + fileName + "\" and its contents?");
@@ -155,6 +173,14 @@ public class FileExplorerRecyclerViewAdapter extends RecyclerView.Adapter<FileEx
                                                 public void onClick(DialogInterface dialogInterface, int i) {
                                                     try {
                                                         FileUtils.forceDelete(file);
+
+                                                        if (preferenceFilePath != null) {
+                                                            if (filePath.equals(preferenceFilePath)) {
+                                                                editor.putString(context.getString(R.string.file_path), null);
+                                                                editor.apply();
+                                                            }
+                                                        }
+
                                                         updateDirectory(parentFilePath, FileExplorerFragment.getFileExplorerRecyclerViewItemList(parentFilePath));
                                                         FileExplorerRecyclerViewAdapter.super.notifyDataSetChanged();
                                                     } catch (IOException e) {

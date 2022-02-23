@@ -21,16 +21,19 @@ import android.widget.TextView;
 
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.toyproject.txtviewerandeditor.MainActivity;
 import com.toyproject.txtviewerandeditor.R;
 import com.toyproject.txtviewerandeditor.databinding.FragmentViewerAndEditorBinding;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.mozilla.universalchardet.UniversalDetector;
 
@@ -103,7 +106,7 @@ public class ViewerAndEditorFragment extends Fragment {
             setTheme(textView);
         }
 
-        // TODO: 2022-02-19 더 빠른 읽기 및 setText 방법 찾기
+        // TODO: 2022-02-19 더 빠른 rendering 방법 찾기
         // FileExplorer에서 지정된 파일에 따라 파일을 읽어 화면에 표시
         if (filePath == null) {
             //crollViewEditText.setVisibility(View.GONE);
@@ -141,6 +144,13 @@ public class ViewerAndEditorFragment extends Fragment {
         });
 
         return root;
+    }
+
+    @Override
+    public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
+        super.onViewStateRestored(savedInstanceState);
+        if (filePath != null)
+            ((MainActivity) getActivity()).getSupportActionBar().setTitle(FilenameUtils.removeExtension((new File(filePath)).getName()));
     }
 
     @Override
@@ -290,6 +300,10 @@ public class ViewerAndEditorFragment extends Fragment {
                     fileInputStream.close();
                 } catch (IOException e) {
                     e.printStackTrace();
+
+                    SharedPreferences sharedPreferences = getActivity().getSharedPreferences(getString(R.string.preference_file_key), Context.MODE_PRIVATE);
+                    SharedPreferences.Editor editor = sharedPreferences.edit();
+                    editor.putString(getString(R.string.file_path), null);
                 }
             }
         }).start();
@@ -316,37 +330,46 @@ public class ViewerAndEditorFragment extends Fragment {
                     fileInputStream.close();
                 } catch (IOException e) {
                     e.printStackTrace();
+
+                    SharedPreferences sharedPreferences = getActivity().getSharedPreferences(getString(R.string.preference_file_key), Context.MODE_PRIVATE);
+                    SharedPreferences.Editor editor = sharedPreferences.edit();
+                    editor.putString(getString(R.string.file_path), null);
                 }
             }
         }).start();
     }
 
-    @SneakyThrows
     public String getCharset(String presentPath) {
-        byte[] buf = new byte[4096];
-        java.io.FileInputStream fis = new java.io.FileInputStream(presentPath);
+        try {
+            byte[] buf = new byte[4096];
+            java.io.FileInputStream fis = new java.io.FileInputStream(presentPath);
 
-        // (1)
-        UniversalDetector detector = new UniversalDetector(null);
+            // (1)
+            UniversalDetector detector = new UniversalDetector(null);
 
-        // (2)
-        int nread;
-        while ((nread = fis.read(buf)) > 0 && !detector.isDone()) {
-            detector.handleData(buf, 0, nread);
+            // (2)
+            int nread;
+            while ((nread = fis.read(buf)) > 0 && !detector.isDone()) {
+                detector.handleData(buf, 0, nread);
+            }
+            // (3)
+            detector.dataEnd();
+
+            // (4)
+            String encoding = detector.getDetectedCharset();
+            if (encoding != null) {
+                System.out.println("Detected encoding = " + encoding);
+            } else {
+                System.out.println("No encoding detected.");
+            }
+
+            detector.reset();
+
+            return encoding;
+        } catch (IOException e) {
+            e.printStackTrace();
         }
-        // (3)
-        detector.dataEnd();
 
-        // (4)
-        String encoding = detector.getDetectedCharset();
-        if (encoding != null) {
-            System.out.println("Detected encoding = " + encoding);
-        } else {
-            System.out.println("No encoding detected.");
-        }
-
-        detector.reset();
-
-        return encoding;
+        return null;
     }
 }

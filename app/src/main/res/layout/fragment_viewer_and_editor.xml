@@ -22,7 +22,8 @@
             android:textSize="20sp"
             android:bufferType="spannable"
             android:paddingLeft="5dp"
-            android:paddingRight="5dp" />
+            android:paddingRight="5dp"
+            android:textIsSelectable="true"/>
     </ScrollView>
 
     <ScrollView

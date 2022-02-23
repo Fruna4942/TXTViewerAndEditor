@@ -8,6 +8,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -16,6 +17,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.MimeTypeMap;
 import android.widget.EditText;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -40,7 +42,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-// TODO: 2022-02-16 새로운 txt 파일 추가, 삭제 구현
 public class FileExplorerFragment extends Fragment {
 
     private FileExplorerViewModel fileExplorerViewModel;
@@ -150,6 +151,9 @@ public class FileExplorerFragment extends Fragment {
         ConstraintLayout constraintLayout = (ConstraintLayout) layoutInflater.inflate(R.layout.dialog_one_input, null);
         TextView textViewTitle = (TextView) constraintLayout.findViewById(R.id.title_dialog_one_input);
         TextView textViewMessage = (TextView) constraintLayout.findViewById(R.id.message_dialog_one_input);
+        EditText editText = constraintLayout.findViewById(R.id.edit_dialog_one_input);
+
+        editText.requestFocus();
 
         switch (item.getItemId()) {
             case R.id.menu_add_file:
@@ -167,7 +171,6 @@ public class FileExplorerFragment extends Fragment {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
                                 String presentPath = fileExplorerRecyclerViewAdapter.getDirectoryPath();
-                                EditText editText = constraintLayout.findViewById(R.id.edit_dialog_one_input);
                                 String filePath = presentPath + "/" + editText.getText() + ".txt";
                                 File file = new File(filePath);
 
@@ -214,7 +217,6 @@ public class FileExplorerFragment extends Fragment {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
                                 String presentPath = fileExplorerRecyclerViewAdapter.getDirectoryPath();
-                                EditText editText = constraintLayout.findViewById(R.id.edit_dialog_one_input);
                                 String filePath = presentPath + "/" + editText.getText();
                                 File file = new File(filePath);
 
