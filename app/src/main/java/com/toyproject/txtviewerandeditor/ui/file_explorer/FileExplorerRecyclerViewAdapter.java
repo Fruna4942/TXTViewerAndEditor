@@ -2,20 +2,28 @@ package com.toyproject.txtviewerandeditor.ui.file_explorer;
 
 import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.os.Build;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.fragment.app.FragmentActivity;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.toyproject.txtviewerandeditor.R;
 
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
+
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 
 public class FileExplorerRecyclerViewAdapter extends RecyclerView.Adapter<FileExplorerRecyclerViewAdapter.ViewHolder> {
@@ -24,25 +32,25 @@ public class FileExplorerRecyclerViewAdapter extends RecyclerView.Adapter<FileEx
         void onItemClick(View view, int pos);
     }
 
-    private String filePath;
+    private String directoryPath;
     private ArrayList<FileExplorerRecyclerViewItem> fileExplorerRecyclerViewItemArrayList;
     private OnItemClickListener onItemClickListener;
 
-    public FileExplorerRecyclerViewAdapter(String presentPath, ArrayList<FileExplorerRecyclerViewItem> fileExplorerRecyclerViewItemArrayList) {
-        this.filePath = presentPath;
+    public FileExplorerRecyclerViewAdapter(String directoryPath, ArrayList<FileExplorerRecyclerViewItem> fileExplorerRecyclerViewItemArrayList) {
+        this.directoryPath = directoryPath;
         this.fileExplorerRecyclerViewItemArrayList = fileExplorerRecyclerViewItemArrayList;
     }
 
-    public String getFilePath() {
-        return filePath;
+    public String getDirectoryPath() {
+        return directoryPath;
     }
 
     public ArrayList<FileExplorerRecyclerViewItem> getRecyclerViewItemArrayList() {
         return fileExplorerRecyclerViewItemArrayList;
     }
 
-    public void changeDirectory(String presentPath, ArrayList<FileExplorerRecyclerViewItem> fileExplorerRecyclerViewItemArrayList) {
-        this.filePath = presentPath;
+    public void updateDirectory(String directoryPath, ArrayList<FileExplorerRecyclerViewItem> fileExplorerRecyclerViewItemArrayList) {
+        this.directoryPath = directoryPath;
         this.fileExplorerRecyclerViewItemArrayList = fileExplorerRecyclerViewItemArrayList;
     }
 
@@ -74,11 +82,94 @@ public class FileExplorerRecyclerViewAdapter extends RecyclerView.Adapter<FileEx
                     FileExplorerRecyclerViewItem fileExplorerRecyclerViewItem = fileExplorerRecyclerViewItemArrayList.get(getAdapterPosition());
 
                     File file = fileExplorerRecyclerViewItem.getFile();
+                    String fileName = file.getName();
+                    String parentFilePath = file.getParent();
 
-                    System.out.println(fileExplorerRecyclerViewItem.getFile().getPath());
                     AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
-                    builder.setTitle("on long click");
-                    builder.show();
+                    builder.setTitle(fileName)
+                            .setItems(R.array.file_long_click_array, new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
+                                    LayoutInflater layoutInflater = ((FragmentActivity) view.getContext()).getLayoutInflater();
+                                    ConstraintLayout constraintLayout = (ConstraintLayout) layoutInflater.inflate(R.layout.dialog_one_input, null);
+                                    TextView textViewTitle = constraintLayout.findViewById(R.id.title_dialog_one_input);
+                                    TextView textViewMessage = constraintLayout.findViewById(R.id.message_dialog_one_input);
+                                    EditText editText = constraintLayout.findViewById(R.id.edit_dialog_one_input);
+
+                                    switch (i) {
+                                        case 0:
+                                            textViewTitle.setText(view.getContext().getString(R.string.rename));
+                                            if (file.isDirectory()) {
+                                                textViewMessage.setText(view.getContext().getString(R.string.new_folder_name));
+                                                editText.setText(fileName);
+                                            } else {
+                                                textViewMessage.setText(view.getContext().getString(R.string.new_file_name));
+                                                editText.setText(FilenameUtils.removeExtension(fileName));
+                                            }
+                                            editText.setSelectAllOnFocus(true);
+                                            editText.requestFocus();
+
+                                            AlertDialog.Builder builderRename = new AlertDialog.Builder(view.getContext());
+                                            builderRename.setView(constraintLayout)
+                                                    .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                                                        @Override
+                                                        public void onClick(DialogInterface dialogInterface, int i) {
+
+                                                        }
+                                                    }).setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                                                        @Override
+                                                        public void onClick(DialogInterface dialogInterface, int i) {
+                                                            try {
+                                                                File fileRenameTo;
+                                                                if (file.isDirectory()) {
+                                                                    fileRenameTo = new File(parentFilePath + "/" + editText.getText());
+                                                                    FileUtils.moveDirectory(file, fileRenameTo);
+                                                                } else {
+                                                                    fileRenameTo = new File(parentFilePath + "/" + editText.getText() + ".txt");
+                                                                    FileUtils.moveFile(file, fileRenameTo);
+                                                                }
+                                                            } catch (IOException e) {
+                                                                e.printStackTrace();
+                                                            }
+                                                            updateDirectory(parentFilePath, FileExplorerFragment.getFileExplorerRecyclerViewItemList(parentFilePath));
+                                                            FileExplorerRecyclerViewAdapter.super.notifyDataSetChanged();
+                                                        }
+                                                    });
+                                            AlertDialog alertDialogRename = builderRename.create();
+                                            alertDialogRename.show();
+                                            break;
+                                        case 1:
+                                            AlertDialog.Builder builderDelete = new AlertDialog.Builder(view.getContext());
+                                            if (file.isDirectory()) {
+                                                builderDelete.setMessage("Delete folder \"" + fileName + "\" and its contents?");
+                                            } else {
+                                                builderDelete.setMessage("Delete \"" + fileName + "\"?");
+                                            }
+                                            builderDelete.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                                                @Override
+                                                public void onClick(DialogInterface dialogInterface, int i) {
+
+                                                }
+                                            }).setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                                                @Override
+                                                public void onClick(DialogInterface dialogInterface, int i) {
+                                                    try {
+                                                        FileUtils.forceDelete(file);
+                                                        updateDirectory(parentFilePath, FileExplorerFragment.getFileExplorerRecyclerViewItemList(parentFilePath));
+                                                        FileExplorerRecyclerViewAdapter.super.notifyDataSetChanged();
+                                                    } catch (IOException e) {
+                                                        e.printStackTrace();
+                                                    }
+                                                }
+                                            });
+                                            AlertDialog alertDialogDelete = builderDelete.create();
+                                            alertDialogDelete.show();
+                                            break;
+                                    }
+                                }
+                            });
+                    AlertDialog alertDialog = builder.create();
+                    alertDialog.show();
 
                     return false;
                 }

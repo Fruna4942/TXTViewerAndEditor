@@ -29,4 +29,6 @@
 
     <string name="new_folder">New folder</string>
     <string name="new_folder_name">Folder name</string>
+
+    <string name="rename">Rename</string>
 </resources>

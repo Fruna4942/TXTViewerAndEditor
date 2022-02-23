@@ -49,12 +49,12 @@ public class FileExplorerFragment extends Fragment {
     private final OnBackPressedCallback onBackPressedCallback = new OnBackPressedCallback(true) {
         @Override
         public void handleOnBackPressed() {
-            String filePath = fileExplorerRecyclerViewAdapter.getFilePath();
+            String filePath = fileExplorerRecyclerViewAdapter.getDirectoryPath();
             if (!filePath.equals(Environment.getExternalStorageDirectory().getPath())) {
                 File file = new File(filePath);
                 File parentFile = file.getParentFile();
                 String newFilePath = parentFile.getPath();
-                fileExplorerRecyclerViewAdapter.changeDirectory(newFilePath, getFileExplorerRecyclerViewItemList(newFilePath));
+                fileExplorerRecyclerViewAdapter.updateDirectory(newFilePath, getFileExplorerRecyclerViewItemList(newFilePath));
                 //recyclerView.setAdapter(fileExplorerRecyclerViewAdapter);
                 //recyclerView.refreshDrawableState();
                 fileExplorerRecyclerViewAdapter.notifyDataSetChanged();
@@ -96,7 +96,7 @@ public class FileExplorerFragment extends Fragment {
 
                 File file = new File(newFilePath);
                 if (file.isDirectory()) {
-                    fileExplorerRecyclerViewAdapter.changeDirectory(newFilePath, getFileExplorerRecyclerViewItemList(newFilePath));
+                    fileExplorerRecyclerViewAdapter.updateDirectory(newFilePath, getFileExplorerRecyclerViewItemList(newFilePath));
                     //recyclerView.setAdapter(fileExplorerRecyclerViewAdapter);
                     //recyclerView.refreshDrawableState();
                     fileExplorerRecyclerViewAdapter.notifyDataSetChanged();
@@ -148,9 +148,14 @@ public class FileExplorerFragment extends Fragment {
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         LayoutInflater layoutInflater = requireActivity().getLayoutInflater();
         ConstraintLayout constraintLayout = (ConstraintLayout) layoutInflater.inflate(R.layout.dialog_one_input, null);
+        TextView textViewTitle = (TextView) constraintLayout.findViewById(R.id.title_dialog_one_input);
+        TextView textViewMessage = (TextView) constraintLayout.findViewById(R.id.message_dialog_one_input);
 
         switch (item.getItemId()) {
             case R.id.menu_add_file:
+                textViewTitle.setText(getString(R.string.new_text_file));
+                textViewMessage.setText(getString(R.string.new_file_name));
+
                 AlertDialog.Builder builderAddFile = new AlertDialog.Builder(getContext());
                 builderAddFile.setView(constraintLayout)
                         .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -161,13 +166,12 @@ public class FileExplorerFragment extends Fragment {
                         .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
-                                String presentPath = fileExplorerRecyclerViewAdapter.getFilePath();
+                                String presentPath = fileExplorerRecyclerViewAdapter.getDirectoryPath();
                                 EditText editText = constraintLayout.findViewById(R.id.edit_dialog_one_input);
                                 String filePath = presentPath + "/" + editText.getText() + ".txt";
                                 File file = new File(filePath);
 
                                 if (file.exists()) {
-                                    System.out.println(filePath + " : already exits");
                                     Toast toast = Toast.makeText(getContext(), "File '" + editText.getText() + ".txt' already exits", Toast.LENGTH_SHORT);
                                     toast.show();
                                 } else {
@@ -176,6 +180,14 @@ public class FileExplorerFragment extends Fragment {
                                         public void run() {
                                             try {
                                                 FileUtils.write(file, null, (String) null);
+                                                String directoryPath = fileExplorerRecyclerViewAdapter.getDirectoryPath();
+                                                fileExplorerRecyclerViewAdapter.updateDirectory(directoryPath, getFileExplorerRecyclerViewItemList(directoryPath));
+                                                getActivity().runOnUiThread(new Runnable() {
+                                                    @Override
+                                                    public void run() {
+                                                        fileExplorerRecyclerViewAdapter.notifyDataSetChanged();
+                                                    }
+                                                });
                                             } catch (IOException e) {
                                                 e.printStackTrace();
                                             }
@@ -188,9 +200,6 @@ public class FileExplorerFragment extends Fragment {
                 alertDialogAddFile.show();
                 break;
             case R.id.menu_add_folder:
-                TextView textViewTitle = (TextView) constraintLayout.findViewById(R.id.title_dialog_one_input);
-                TextView textViewMessage = (TextView) constraintLayout.findViewById(R.id.message_dialog_one_input);
-
                 textViewTitle.setText(getString(R.string.new_folder));
                 textViewMessage.setText(getString(R.string.new_folder_name));
 
@@ -204,13 +213,12 @@ public class FileExplorerFragment extends Fragment {
                         .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
-                                String presentPath = fileExplorerRecyclerViewAdapter.getFilePath();
+                                String presentPath = fileExplorerRecyclerViewAdapter.getDirectoryPath();
                                 EditText editText = constraintLayout.findViewById(R.id.edit_dialog_one_input);
                                 String filePath = presentPath + "/" + editText.getText();
                                 File file = new File(filePath);
 
                                 if (file.exists()) {
-                                    System.out.println(filePath + " : already exits");
                                     Toast toast = Toast.makeText(getContext(), "Folder '" + editText.getText() + "' already exits", Toast.LENGTH_SHORT);
                                     toast.show();
                                 } else {
@@ -219,6 +227,14 @@ public class FileExplorerFragment extends Fragment {
                                         public void run() {
                                             try {
                                                 FileUtils.forceMkdir(file);
+                                                String directoryPath = fileExplorerRecyclerViewAdapter.getDirectoryPath();
+                                                fileExplorerRecyclerViewAdapter.updateDirectory(directoryPath, getFileExplorerRecyclerViewItemList(directoryPath));
+                                                getActivity().runOnUiThread(new Runnable() {
+                                                    @Override
+                                                    public void run() {
+                                                        fileExplorerRecyclerViewAdapter.notifyDataSetChanged();
+                                                    }
+                                                });
                                             } catch (IOException e) {
                                                 e.printStackTrace();
                                             }
@@ -235,24 +251,20 @@ public class FileExplorerFragment extends Fragment {
         return super.onOptionsItemSelected(item);
     }
 
-    public ArrayList<FileExplorerRecyclerViewItem> getFileExplorerRecyclerViewItemList(String filePath) {
+    public static ArrayList<FileExplorerRecyclerViewItem> getFileExplorerRecyclerViewItemList(String filePath) {
         ArrayList<FileExplorerRecyclerViewItem> fileExplorerRecyclerViewItemArrayList = new ArrayList<>();
-        File presentFile = new File(filePath);
-        File[] presentFileList = presentFile.listFiles();
+        File file = new File(filePath);
 
-        if (presentFile.exists()) {
-            if (presentFileList != null)
-                Arrays.sort(presentFileList);
+        if (file.exists()) {
+            File[] fileList = file.listFiles();
+            if (fileList != null)
+                Arrays.sort(fileList);
 
-            for (int i = 0; i < presentFileList.length; i++) {
-                File file_i = presentFileList[i];
-                boolean anotherFile = true;
+            for (int i = 0; i < fileList.length; i++) {
+                File file_i = fileList[i];
                 boolean isDirectory = file_i.isDirectory();
 
-                if (isDirectory || MimeTypeMap.getFileExtensionFromUrl(Uri.fromFile(file_i).toString()).equals("txt"))
-                    anotherFile = false;
-
-                if (!anotherFile) {
+                if (isDirectory || MimeTypeMap.getFileExtensionFromUrl(Uri.fromFile(file_i).toString()).equals("txt")) {
                     FileExplorerRecyclerViewItem fileExplorerRecyclerViewItem = new FileExplorerRecyclerViewItem(isDirectory, file_i);
                     fileExplorerRecyclerViewItemArrayList.add(fileExplorerRecyclerViewItem);
                 }

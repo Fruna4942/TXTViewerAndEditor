@@ -200,8 +200,7 @@ public class ViewerAndEditorFragment extends Fragment {
                                 public void onClick(DialogInterface dialogInterface, int i) {
 
                                 }
-                            })
-                            .setPositiveButton("Save", new DialogInterface.OnClickListener() {
+                            }).setPositiveButton("Save", new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialogInterface, int i) {
                                     String text;
@@ -219,8 +218,7 @@ public class ViewerAndEditorFragment extends Fragment {
                                         e.printStackTrace();
                                     }
                                 }
-                            })
-                            .setNeutralButton("Cancel", new DialogInterface.OnClickListener() {
+                            }).setNeutralButton("Cancel", new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialogInterface, int i) {
                                     if (drawerLayout.isDrawerOpen(GravityCompat.START)) {

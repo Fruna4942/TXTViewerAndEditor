@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="file_long_click_array">
+        <item>Rename</item>
+        <item>Delete</item>
+    </string-array>
+</resources>
