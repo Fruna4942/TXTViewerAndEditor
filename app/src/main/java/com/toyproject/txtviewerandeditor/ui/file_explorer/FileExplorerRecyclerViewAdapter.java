@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -18,6 +19,8 @@ import androidx.fragment.app.FragmentActivity;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.toyproject.txtviewerandeditor.R;
+import com.toyproject.txtviewerandeditor.moduel.dialog_layout_manager.BuilderThemeInit;
+import com.toyproject.txtviewerandeditor.moduel.dialog_layout_manager.OneInputAlertDialogLayout;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
@@ -28,6 +31,7 @@ import java.util.ArrayList;
 
 public class FileExplorerRecyclerViewAdapter extends RecyclerView.Adapter<FileExplorerRecyclerViewAdapter.ViewHolder> {
 
+    // Adapter 외부에서 onClickListener 를 설정하기 위한 Interface
     public interface OnItemClickListener {
         void onItemClick(View view, int pos);
     }
@@ -91,32 +95,32 @@ public class FileExplorerRecyclerViewAdapter extends RecyclerView.Adapter<FileEx
                     SharedPreferences.Editor editor = sharedPreferences.edit();
                     String preferenceFilePath = sharedPreferences.getString(context.getString(R.string.file_path), null);
 
-                    AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
+                    // LongClick 된 아이템에 대한 작업을 안내하는 AlertDialog
+                    AlertDialog.Builder builder = BuilderThemeInit.init(context);
                     builder.setTitle(fileName)
                             .setItems(R.array.file_long_click_array, new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialogInterface, int i) {
                                     LayoutInflater layoutInflater = ((FragmentActivity) view.getContext()).getLayoutInflater();
-                                    ConstraintLayout constraintLayout = (ConstraintLayout) layoutInflater.inflate(R.layout.dialog_one_input, null);
-                                    TextView textViewTitle = constraintLayout.findViewById(R.id.title_dialog_one_input);
-                                    TextView textViewMessage = constraintLayout.findViewById(R.id.message_dialog_one_input);
-                                    EditText editText = constraintLayout.findViewById(R.id.edit_dialog_one_input);
+                                    OneInputAlertDialogLayout oneInputAlertDialogLayout = new OneInputAlertDialogLayout(layoutInflater);
 
                                     switch (i) {
                                         case 0: // Rename
-                                            textViewTitle.setText(view.getContext().getString(R.string.rename));
                                             if (file.isDirectory()) {
-                                                textViewMessage.setText(view.getContext().getString(R.string.new_folder_name));
-                                                editText.setText(fileName);
+                                                oneInputAlertDialogLayout.setTexts(view.getContext().getString(R.string.rename), view.getContext().getString(R.string.new_folder_name), fileName);
                                             } else {
-                                                textViewMessage.setText(view.getContext().getString(R.string.new_file_name));
-                                                editText.setText(FilenameUtils.removeExtension(fileName));
+                                                oneInputAlertDialogLayout.setTexts(view.getContext().getString(R.string.rename), view.getContext().getString(R.string.new_file_name), FilenameUtils.removeExtension(fileName));
                                             }
-                                            editText.setSelectAllOnFocus(true);
-                                            editText.requestFocus();
+                                            oneInputAlertDialogLayout.setFocusAndSelectAll(true);
+                                            oneInputAlertDialogLayout.setTheme(context);
 
-                                            AlertDialog.Builder builderRename = new AlertDialog.Builder(view.getContext());
-                                            builderRename.setView(constraintLayout)
+                                            ConstraintLayout constraintLayoutRename = oneInputAlertDialogLayout.getConstraintLayout();
+                                            EditText editTextRename = constraintLayoutRename.findViewById(R.id.edit_dialog_one_input);
+
+
+                                            // Rename 될 이름을 입력받는 AlertDialog
+                                            AlertDialog.Builder builderRename = BuilderThemeInit.init(context);
+                                            builderRename.setView(constraintLayoutRename)
                                                     .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
                                                         @Override
                                                         public void onClick(DialogInterface dialogInterface, int i) {
@@ -125,7 +129,7 @@ public class FileExplorerRecyclerViewAdapter extends RecyclerView.Adapter<FileEx
                                                     }).setPositiveButton("Ok", new DialogInterface.OnClickListener() {
                                                         @Override
                                                         public void onClick(DialogInterface dialogInterface, int i) {
-                                                            String rename = editText.getText().toString();
+                                                            String rename = editTextRename.getText().toString();
                                                             try {
                                                                 File fileRenameTo;
                                                                 String renamePath;
@@ -157,7 +161,8 @@ public class FileExplorerRecyclerViewAdapter extends RecyclerView.Adapter<FileEx
                                             alertDialogRename.show();
                                             break;
                                         case 1: // Delete
-                                            AlertDialog.Builder builderDelete = new AlertDialog.Builder(view.getContext());
+                                            // Delete 에 대해 확인을 안내하는 AlertDialog
+                                            AlertDialog.Builder builderDelete = BuilderThemeInit.init(context);
                                             if (file.isDirectory()) {
                                                 builderDelete.setMessage("Delete folder \"" + fileName + "\" and its contents?");
                                             } else {

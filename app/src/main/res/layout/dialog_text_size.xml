@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <TextView
@@ -23,7 +23,7 @@
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"/>
     <TextView
-        android:id="@+id/text_example_dialog"
+        android:id="@+id/example_dialog_text_size"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:text="@string/alphabet"
@@ -36,44 +36,16 @@
         android:paddingLeft="20dp"
         android:paddingRight="15dp"
         app:layout_constraintTop_toBottomOf="@id/divider_dialog_one_input"
-        app:layout_constraintBottom_toTopOf="@id/linear_layout_buttons_dialog"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toLeftOf="@id/number_picker_dialog"/>
+        app:layout_constraintRight_toLeftOf="@id/number_picker_dialog_text_size"/>
     <NumberPicker
-        android:id="@+id/number_picker_dialog"
+        android:id="@+id/number_picker_dialog_text_size"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginRight="20dp"
         app:layout_constraintTop_toBottomOf="@id/divider_dialog_one_input"
-        app:layout_constraintBottom_toTopOf="@id/linear_layout_buttons_dialog"
-        app:layout_constraintRight_toRightOf="parent" />
-    <LinearLayout
-        android:id="@+id/linear_layout_buttons_dialog"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@id/number_picker_dialog"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent">
-        <Button
-            android:id="@+id/button_cancel_dialog"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Cancel"
-            android:textAllCaps="false"
-            android:background="@drawable/shape_button_alert_dialog" />
-        <Button
-            android:id="@+id/button_set_dialog"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Set"
-            android:textAllCaps="false"
-            android:shadowColor="#00000000"
-            android:background="@drawable/shape_button_alert_dialog" />
-    </LinearLayout>
-
-
+        app:layout_constraintRight_toRightOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

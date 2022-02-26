@@ -31,6 +31,7 @@ import androidx.lifecycle.ViewModelProvider;
 import com.toyproject.txtviewerandeditor.MainActivity;
 import com.toyproject.txtviewerandeditor.R;
 import com.toyproject.txtviewerandeditor.databinding.FragmentViewerAndEditorBinding;
+import com.toyproject.txtviewerandeditor.moduel.dialog_layout_manager.BuilderThemeInit;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
@@ -50,7 +51,7 @@ public class ViewerAndEditorFragment extends Fragment {
 
     private ViewerAndEditorViewModel viewerAndEditorViewModel;
     private FragmentViewerAndEditorBinding binding;
-    private final OnBackPressedCallback onBackPressedCallback = new OnBackPressedCallback(true) {
+    private final OnBackPressedCallback onBackPressedCallback = new OnBackPressedCallback(true) { // ViewerAndEditor 에서 Back 버튼이 눌렸을 때의 작업을 처리하는 콜백함수
         @Override
         public void handleOnBackPressed() {
             ActivityCompat.finishAffinity(Objects.requireNonNull(getActivity()));
@@ -67,6 +68,7 @@ public class ViewerAndEditorFragment extends Fragment {
     String fileEncoding = null;
     private boolean editable;
     private boolean isTextChanged = false;
+    String theme;
 
     ScrollView scrollViewEditText;
     ScrollView scrollViewText;
@@ -89,59 +91,52 @@ public class ViewerAndEditorFragment extends Fragment {
             fileEncoding = getCharset(filePath);
         }
         editable = sharedPreferences.getBoolean(getString(R.string.editable), false);
+        theme = sharedPreferences.getString(getString(R.string.theme), getString(R.string.theme_dark));
 
         scrollViewText = binding.scrollTextViewerAndEditor;
         scrollViewEditText = binding.scrollEditTextViewerAndEditor;
         textView = binding.textViewerAndEditor;
         editText = binding.editTextViewerAndEditor;
 
-        // 해당 Fragment에서 On Back Pressed시 앱 종료
-        onBackPressedCallback.setEnabled(true);
-        requireActivity().getOnBackPressedDispatcher().addCallback(onBackPressedCallback);
-
-        // API29 미만에서의 Fragment Theme 지정
-        if (editable) {
-            setTheme(editText);
-        } else {
-            setTheme(textView);
-        }
-
         // TODO: 2022-02-19 더 빠른 rendering 방법 찾기
         // FileExplorer에서 지정된 파일에 따라 파일을 읽어 화면에 표시
         if (filePath == null) {
-            //crollViewEditText.setVisibility(View.GONE);
+            //scrollViewEditText.setVisibility(View.GONE);
             //scrollViewText.setVisibility(View.VISIBLE);
-            setTextPleaseSelect(scrollViewText, textView);
+            setTextPleaseSelect(textView);
+            setTheme(textView);
         } else {
             if (editable) {
                 scrollViewText.setVisibility(View.GONE);
                 scrollViewEditText.setVisibility(View.VISIBLE);
                 setEditText(filePath);
+                setTheme(editText);
+
+                // EditText 에서 수정이 일어나면 수정여부를 true 로 지정
+                editText.addTextChangedListener(new TextWatcher() {
+                    @Override
+                    public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+                    }
+
+                    @Override
+                    public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+                    }
+
+                    @Override
+                    public void afterTextChanged(Editable editable) {
+                        if (!isTextChanged) // 조건문 검사 하는 것이 자원을 덜 소모하는 듯?
+                            isTextChanged = true;
+                    }
+                });
             } else {
                 //scrollViewEditText.setVisibility(View.GONE);
                 //scrollViewText.setVisibility(View.VISIBLE);
                 setTextView(filePath);
+                setTheme(textView);
             }
         }
-
-        // EditText에서 수정이 일어나면 수정여부를 true로 지정
-        editText.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable editable) {
-                if (!isTextChanged) // 조건문 검사 하는 것이 자원을 덜 소모하는 듯?
-                    isTextChanged = true;
-            }
-        });
 
         return root;
     }
@@ -149,6 +144,7 @@ public class ViewerAndEditorFragment extends Fragment {
     @Override
     public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
         super.onViewStateRestored(savedInstanceState);
+        // SharedPreference 에 설정된 파일의 이름을 ActionBar 의 Title로 지정
         if (filePath != null)
             ((MainActivity) getActivity()).getSupportActionBar().setTitle(FilenameUtils.removeExtension((new File(filePath)).getName()));
     }
@@ -157,12 +153,15 @@ public class ViewerAndEditorFragment extends Fragment {
     public void onResume() {
         super.onResume();
 
+        onBackPressedCallback.setEnabled(true);
+        requireActivity().getOnBackPressedDispatcher().addCallback(onBackPressedCallback);
         isTextChanged = false;
     }
 
     @Override
     public void onPause() {
         super.onPause();
+
         onBackPressedCallback.setEnabled(false);
     }
 
@@ -176,6 +175,7 @@ public class ViewerAndEditorFragment extends Fragment {
     public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
 
+        // Editable 이 설정되어있으면 Save menu 추가
         if (filePath != null)
             if (editable)
                 inflater.inflate(R.menu.menu_save_toolbar, menu);
@@ -184,7 +184,7 @@ public class ViewerAndEditorFragment extends Fragment {
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.menu_save:
+            case R.id.menu_save: // EditText 에서 수정한 내용 저장
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
@@ -197,11 +197,12 @@ public class ViewerAndEditorFragment extends Fragment {
                     }
                 }).start();
                 break;
-            default:
+            default: // 저장하지 않고 Navigation drawer 클릭 시
                 if (isTextChanged) {
                     DrawerLayout drawerLayout = getActivity().findViewById(R.id.drawer_layout);
 
-                    AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                    // 저장을 안내하는 AlertDialog
+                    AlertDialog.Builder builder = BuilderThemeInit.init(getContext());
                     builder.setTitle("Changes are made")
                             .setMessage("Do you want to save changes?\n" +
                                     "If you choose \"Don't Save\", the data you changed will be lost.")
@@ -236,6 +237,7 @@ public class ViewerAndEditorFragment extends Fragment {
                                     }
                                 }
                             });
+                    builder.setCancelable(false);
                     AlertDialog alertDialog = builder.create();
                     alertDialog.show();
                 }
@@ -249,11 +251,11 @@ public class ViewerAndEditorFragment extends Fragment {
     private void setTheme(TextView textView) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
             SharedPreferences sharedPreferences = getActivity().getSharedPreferences(getString(R.string.preference_file_key), Context.MODE_PRIVATE);
-            String presentTheme = sharedPreferences.getString(getString(R.string.theme), getString(R.string.theme_dark));
+            String theme = sharedPreferences.getString(getString(R.string.theme), getString(R.string.theme_dark));
 
-            if (presentTheme.equals(getString(R.string.theme_dark))) {
+            if (theme.equals(getString(R.string.theme_dark))) {
                 textView.setTextColor(getActivity().getColor(R.color.text_color_dark));
-            } else if (presentTheme.equals(getString(R.string.theme_light))) {
+            } else if (theme.equals(getString(R.string.theme_light))) {
                 textView.setTextColor(getActivity().getColor(R.color.text_color_light));
             }
         }
@@ -272,8 +274,7 @@ public class ViewerAndEditorFragment extends Fragment {
         }
     }
 
-    private void setTextPleaseSelect(ScrollView scrollView, TextView textView) {
-        scrollView.setFillViewport(true);
+    private void setTextPleaseSelect(TextView textView) {
         textView.setGravity(Gravity.CENTER);
         textView.setText("Please select txt file");
         textView.setTextSize(25);

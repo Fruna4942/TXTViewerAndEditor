@@ -8,7 +8,6 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -17,8 +16,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.MimeTypeMap;
 import android.widget.EditText;
-import android.widget.Switch;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.OnBackPressedCallback;
@@ -34,6 +31,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.toyproject.txtviewerandeditor.R;
 import com.toyproject.txtviewerandeditor.databinding.FragmentFileExplorerBinding;
+import com.toyproject.txtviewerandeditor.moduel.dialog_layout_manager.BuilderThemeInit;
+import com.toyproject.txtviewerandeditor.moduel.dialog_layout_manager.OneInputAlertDialogLayout;
 
 import org.apache.commons.io.FileUtils;
 
@@ -47,19 +46,17 @@ public class FileExplorerFragment extends Fragment {
     private FileExplorerViewModel fileExplorerViewModel;
     private FragmentFileExplorerBinding binding;
     private FileExplorerRecyclerViewAdapter fileExplorerRecyclerViewAdapter;
-    private final OnBackPressedCallback onBackPressedCallback = new OnBackPressedCallback(true) {
+    private final OnBackPressedCallback onBackPressedCallback = new OnBackPressedCallback(true) { // FileExplorer 에서 Back 버튼이 눌렸을 때의 작업을 처리하는 콜백함수
         @Override
         public void handleOnBackPressed() {
-            String filePath = fileExplorerRecyclerViewAdapter.getDirectoryPath();
-            if (!filePath.equals(Environment.getExternalStorageDirectory().getPath())) {
-                File file = new File(filePath);
-                File parentFile = file.getParentFile();
-                String newFilePath = parentFile.getPath();
-                fileExplorerRecyclerViewAdapter.updateDirectory(newFilePath, getFileExplorerRecyclerViewItemList(newFilePath));
-                //recyclerView.setAdapter(fileExplorerRecyclerViewAdapter);
-                //recyclerView.refreshDrawableState();
+            String directoryPath = fileExplorerRecyclerViewAdapter.getDirectoryPath();
+            if (!directoryPath.equals(Environment.getExternalStorageDirectory().getPath())) { // Root 디렉토리가 아니면 부모 디렉토리로 이동
+                File directory = new File(directoryPath);
+                File parentDirectory = directory.getParentFile();
+                String parentDirectoryPath = parentDirectory.getPath();
+                fileExplorerRecyclerViewAdapter.updateDirectory(parentDirectoryPath, getFileExplorerRecyclerViewItemList(parentDirectoryPath));
                 fileExplorerRecyclerViewAdapter.notifyDataSetChanged();
-            } else {
+            } else { // Root 디렉토리면 ViewerAndEditor Fragment 로 Navigate
                 NavDirections navDirections = FileExplorerFragmentDirections.actionNavFileExplorerToNavViewerAndEditor();
                 Navigation.findNavController(FileExplorerFragment.super.getView()).navigate(navDirections);
             }
@@ -96,12 +93,12 @@ public class FileExplorerFragment extends Fragment {
                 String newFilePath = fileExplorerRecyclerViewAdapter.getRecyclerViewItemArrayList().get(pos).getFile().getPath();
 
                 File file = new File(newFilePath);
-                if (file.isDirectory()) {
+                if (file.isDirectory()) { // 디렉토리 클릭 시 해당 디렉토리로 이동
+                    // Adapter 의 Item List 를 새로운 디렉토리 내부의 요소들로 변경
                     fileExplorerRecyclerViewAdapter.updateDirectory(newFilePath, getFileExplorerRecyclerViewItemList(newFilePath));
-                    //recyclerView.setAdapter(fileExplorerRecyclerViewAdapter);
-                    //recyclerView.refreshDrawableState();
                     fileExplorerRecyclerViewAdapter.notifyDataSetChanged();
-                } else if (MimeTypeMap.getFileExtensionFromUrl(Uri.fromFile(file).toString()).equals("txt")) {
+                } else if (MimeTypeMap.getFileExtensionFromUrl(Uri.fromFile(file).toString()).equals("txt")) { // Text 파일 클릭 시 ViewerAndEditor Fragment 로 Navigate
+                    // 해당파일을 SharedPreferences 에 저장
                     SharedPreferences sharedPreferences = getActivity().getSharedPreferences(getString(R.string.preference_file_key), Context.MODE_PRIVATE);
                     SharedPreferences.Editor editor = sharedPreferences.edit();
                     editor.putString(getString(R.string.file_path), file.getPath());
@@ -148,20 +145,22 @@ public class FileExplorerFragment extends Fragment {
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         LayoutInflater layoutInflater = requireActivity().getLayoutInflater();
-        ConstraintLayout constraintLayout = (ConstraintLayout) layoutInflater.inflate(R.layout.dialog_one_input, null);
-        TextView textViewTitle = (TextView) constraintLayout.findViewById(R.id.title_dialog_one_input);
-        TextView textViewMessage = (TextView) constraintLayout.findViewById(R.id.message_dialog_one_input);
-        EditText editText = constraintLayout.findViewById(R.id.edit_dialog_one_input);
+        OneInputAlertDialogLayout oneInputAlertDialogLayout = new OneInputAlertDialogLayout(layoutInflater);
+        SharedPreferences sharedPreferences = getActivity().getSharedPreferences(getString(R.string.preference_file_key), Context.MODE_PRIVATE);
+        String theme = sharedPreferences.getString(getString(R.string.theme), getString(R.string.theme_dark));
 
-        editText.requestFocus();
+        oneInputAlertDialogLayout.setTheme(getContext());
+        oneInputAlertDialogLayout.setFocus(true);
 
         switch (item.getItemId()) {
-            case R.id.menu_add_file:
-                textViewTitle.setText(getString(R.string.new_text_file));
-                textViewMessage.setText(getString(R.string.new_file_name));
+            case R.id.menu_add_file: // 새로운 Text 파일 추가
+                oneInputAlertDialogLayout.setTexts(getString(R.string.new_text_file), getString(R.string.new_file_name), null);
+                ConstraintLayout constraintLayoutAddFile = oneInputAlertDialogLayout.getConstraintLayout();
+                EditText editTextAddFile = constraintLayoutAddFile.findViewById(R.id.edit_dialog_one_input);
 
-                AlertDialog.Builder builderAddFile = new AlertDialog.Builder(getContext());
-                builderAddFile.setView(constraintLayout)
+                // 새로운 Text 파일의 이름을 입력받는 AlertDialog
+                AlertDialog.Builder builderAddFile = BuilderThemeInit.init(getContext());
+                builderAddFile.setView(oneInputAlertDialogLayout.getConstraintLayout())
                         .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
@@ -171,11 +170,11 @@ public class FileExplorerFragment extends Fragment {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
                                 String presentPath = fileExplorerRecyclerViewAdapter.getDirectoryPath();
-                                String filePath = presentPath + "/" + editText.getText() + ".txt";
+                                String filePath = presentPath + "/" + editTextAddFile.getText() + ".txt";
                                 File file = new File(filePath);
 
                                 if (file.exists()) {
-                                    Toast toast = Toast.makeText(getContext(), "File '" + editText.getText() + ".txt' already exits", Toast.LENGTH_SHORT);
+                                    Toast toast = Toast.makeText(getContext(), "File '" + editTextAddFile.getText() + ".txt' already exits", Toast.LENGTH_SHORT);
                                     toast.show();
                                 } else {
                                     new Thread(new Runnable() {
@@ -183,6 +182,7 @@ public class FileExplorerFragment extends Fragment {
                                         public void run() {
                                             try {
                                                 FileUtils.write(file, null, (String) null);
+                                                
                                                 String directoryPath = fileExplorerRecyclerViewAdapter.getDirectoryPath();
                                                 fileExplorerRecyclerViewAdapter.updateDirectory(directoryPath, getFileExplorerRecyclerViewItemList(directoryPath));
                                                 getActivity().runOnUiThread(new Runnable() {
@@ -202,12 +202,14 @@ public class FileExplorerFragment extends Fragment {
                 AlertDialog alertDialogAddFile = builderAddFile.create();
                 alertDialogAddFile.show();
                 break;
-            case R.id.menu_add_folder:
-                textViewTitle.setText(getString(R.string.new_folder));
-                textViewMessage.setText(getString(R.string.new_folder_name));
+            case R.id.menu_add_folder: // 새로운 디렉토리 추가
+                oneInputAlertDialogLayout.setTexts(getString(R.string.new_folder), getString(R.string.new_folder_name), null);
+                ConstraintLayout constraintLayoutAddFolder = oneInputAlertDialogLayout.getConstraintLayout();
+                EditText editTextAddFolder = constraintLayoutAddFolder.findViewById(R.id.edit_dialog_one_input);
 
-                AlertDialog.Builder builderAddFolder = new AlertDialog.Builder(getContext());
-                builderAddFolder.setView(constraintLayout)
+                // 새로운 디렉토리의 이름을 입력받는 AlertDialog
+                AlertDialog.Builder builderAddFolder = BuilderThemeInit.init(getContext());
+                builderAddFolder.setView(constraintLayoutAddFolder)
                         .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
@@ -217,11 +219,11 @@ public class FileExplorerFragment extends Fragment {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
                                 String presentPath = fileExplorerRecyclerViewAdapter.getDirectoryPath();
-                                String filePath = presentPath + "/" + editText.getText();
+                                String filePath = presentPath + "/" + editTextAddFolder.getText();
                                 File file = new File(filePath);
 
                                 if (file.exists()) {
-                                    Toast toast = Toast.makeText(getContext(), "Folder '" + editText.getText() + "' already exits", Toast.LENGTH_SHORT);
+                                    Toast toast = Toast.makeText(getContext(), "Folder '" + editTextAddFolder.getText() + "' already exits", Toast.LENGTH_SHORT);
                                     toast.show();
                                 } else {
                                     new Thread(new Runnable() {
@@ -229,6 +231,7 @@ public class FileExplorerFragment extends Fragment {
                                         public void run() {
                                             try {
                                                 FileUtils.forceMkdir(file);
+                                                
                                                 String directoryPath = fileExplorerRecyclerViewAdapter.getDirectoryPath();
                                                 fileExplorerRecyclerViewAdapter.updateDirectory(directoryPath, getFileExplorerRecyclerViewItemList(directoryPath));
                                                 getActivity().runOnUiThread(new Runnable() {
@@ -253,12 +256,12 @@ public class FileExplorerFragment extends Fragment {
         return super.onOptionsItemSelected(item);
     }
 
-    public static ArrayList<FileExplorerRecyclerViewItem> getFileExplorerRecyclerViewItemList(String filePath) {
+    public static ArrayList<FileExplorerRecyclerViewItem> getFileExplorerRecyclerViewItemList(String directoryPath) {
         ArrayList<FileExplorerRecyclerViewItem> fileExplorerRecyclerViewItemArrayList = new ArrayList<>();
-        File file = new File(filePath);
+        File directory = new File(directoryPath);
 
-        if (file.exists()) {
-            File[] fileList = file.listFiles();
+        if (directory.exists()) {
+            File[] fileList = directory.listFiles();
             if (fileList != null)
                 Arrays.sort(fileList);
 

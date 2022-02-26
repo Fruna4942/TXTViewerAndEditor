@@ -47,6 +47,7 @@
         <entry key="..\:/Programming Lecture/AndroidStudio/projects/txtViewerAndEditor/txtViewerAndEditor/app/src/main/res/drawable/nav_view_item_background.xml" value="0.22135416666666666" />
         <entry key="..\:/Programming Lecture/AndroidStudio/projects/txtViewerAndEditor/txtViewerAndEditor/app/src/main/res/drawable/nav_view_item_background_dark.xml" value="0.20989583333333334" />
         <entry key="..\:/Programming Lecture/AndroidStudio/projects/txtViewerAndEditor/txtViewerAndEditor/app/src/main/res/drawable/nav_view_item_background_light.xml" value="0.22135416666666666" />
+        <entry key="..\:/Programming Lecture/AndroidStudio/projects/txtViewerAndEditor/txtViewerAndEditor/app/src/main/res/drawable/nav_view_itme_text_color.xml" value="0.1811965811965812" />
         <entry key="..\:/Programming Lecture/AndroidStudio/projects/txtViewerAndEditor/txtViewerAndEditor/app/src/main/res/drawable/recycler_view_divider_dark.xml" value="0.253125" />
         <entry key="..\:/Programming Lecture/AndroidStudio/projects/txtViewerAndEditor/txtViewerAndEditor/app/src/main/res/drawable/recycler_view_divider_light.xml" value="0.25416666666666665" />
         <entry key="..\:/Programming Lecture/AndroidStudio/projects/txtViewerAndEditor/txtViewerAndEditor/app/src/main/res/drawable/shape_button_alert_dialog.xml" value="0.31367521367521367" />
@@ -58,8 +59,9 @@
         <entry key="..\:/Programming Lecture/AndroidStudio/projects/txtViewerAndEditor/txtViewerAndEditor/app/src/main/res/layout/app_bar_main.xml" value="0.2046875" />
         <entry key="..\:/Programming Lecture/AndroidStudio/projects/txtViewerAndEditor/txtViewerAndEditor/app/src/main/res/layout/content_main.xml" value="0.2046875" />
         <entry key="..\:/Programming Lecture/AndroidStudio/projects/txtViewerAndEditor/txtViewerAndEditor/app/src/main/res/layout/dialog_add_folder.xml" value="0.33" />
-        <entry key="..\:/Programming Lecture/AndroidStudio/projects/txtViewerAndEditor/txtViewerAndEditor/app/src/main/res/layout/dialog_one_input.xml" value="0.19829059829059828" />
+        <entry key="..\:/Programming Lecture/AndroidStudio/projects/txtViewerAndEditor/txtViewerAndEditor/app/src/main/res/layout/dialog_one_input.xml" value="0.67" />
         <entry key="..\:/Programming Lecture/AndroidStudio/projects/txtViewerAndEditor/txtViewerAndEditor/app/src/main/res/layout/dialog_text_size.xml" value="0.3004273504273504" />
+        <entry key="..\:/Programming Lecture/AndroidStudio/projects/txtViewerAndEditor/txtViewerAndEditor/app/src/main/res/layout/divider_dialog.xml" value="0.20085470085470086" />
         <entry key="..\:/Programming Lecture/AndroidStudio/projects/txtViewerAndEditor/txtViewerAndEditor/app/src/main/res/layout/fragment_file_explorer.xml" value="0.19021739130434784" />
         <entry key="..\:/Programming Lecture/AndroidStudio/projects/txtViewerAndEditor/txtViewerAndEditor/app/src/main/res/layout/fragment_setting.xml" value="0.3004273504273504" />
         <entry key="..\:/Programming Lecture/AndroidStudio/projects/txtViewerAndEditor/txtViewerAndEditor/app/src/main/res/layout/fragment_viewer_and_editor.xml" value="0.1" />

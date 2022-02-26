@@ -11,7 +11,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.Button;
 import android.widget.ListView;
 import android.widget.NumberPicker;
 import android.widget.TextView;
@@ -23,6 +22,8 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.toyproject.txtviewerandeditor.R;
 import com.toyproject.txtviewerandeditor.databinding.FragmentSettingBinding;
+import com.toyproject.txtviewerandeditor.moduel.dialog_layout_manager.BuilderThemeInit;
+import com.toyproject.txtviewerandeditor.moduel.dialog_layout_manager.TextSizeAlertDialogLayout;
 
 import java.util.ArrayList;
 
@@ -41,7 +42,7 @@ public class SettingFragment extends Fragment {
 
         SharedPreferences sharedPreferences;
         SharedPreferences.Editor editor;
-        String presentTheme;
+        String theme;
         boolean editable;
 
         SettingListViewAdapter settingListViewAdapter;
@@ -59,12 +60,12 @@ public class SettingFragment extends Fragment {
          */
         sharedPreferences = getActivity().getSharedPreferences(getString(R.string.preference_file_key), Context.MODE_PRIVATE);
         editor = sharedPreferences.edit();
-        presentTheme = sharedPreferences.getString(getString(R.string.theme), getString(R.string.theme_dark));
+        theme = sharedPreferences.getString(getString(R.string.theme), getString(R.string.theme_dark));
         editable = sharedPreferences.getBoolean(getString(R.string.editable), false);
 
         ArrayList<SettingListViewItem> settingListViewItemArrayList = new ArrayList<SettingListViewItem>();
         settingListViewItemArrayList.add(new SettingListViewItem("Text size", false, false));
-        settingListViewItemArrayList.add(new SettingListViewItem("Light theme", presentTheme.equals(getString(R.string.theme_light)), true));
+        settingListViewItemArrayList.add(new SettingListViewItem("Light theme", theme.equals(getString(R.string.theme_light)), true));
         settingListViewItemArrayList.add(new SettingListViewItem("Editable", editable, true));
 
 
@@ -78,60 +79,37 @@ public class SettingFragment extends Fragment {
                 final int position = i;
 
                 switch (position) {
-                    case 0: // text size
-                        // TODO: 2022-02-16 API 28 이하에서의 Dialog Dark Theme 구현 
+                    case 0: // Text size
                         LayoutInflater layoutInflater = requireActivity().getLayoutInflater();
-                        ConstraintLayout constraintLayout = (ConstraintLayout) layoutInflater.inflate(R.layout.dialog_text_size, null);
+                        TextSizeAlertDialogLayout textSizeAlertDialogLayout = new TextSizeAlertDialogLayout(layoutInflater);
+                        int textSize = sharedPreferences.getInt(getString(R.string.text_size), 20);
 
-                        AlertDialog.Builder builder;
-                        AlertDialog alertDialog;
-                        int textSize;
+                        textSizeAlertDialogLayout.setTheme(getContext());
+                        textSizeAlertDialogLayout.setNumberPicker(10, 50, textSize);
 
-                        NumberPicker numberPicker;
-                        TextView textView;
-                        Button buttonCancel;
-                        Button buttonSet;
+                        ConstraintLayout constraintLayout = textSizeAlertDialogLayout.getConstraintLayout();
+                        NumberPicker numberPicker = constraintLayout.findViewById(R.id.number_picker_dialog_text_size);
 
-                        builder = new AlertDialog.Builder(getActivity());
-                        builder.setView(constraintLayout);
-                        alertDialog = builder.create();
+                        // Text size 를 선택하는 AlertDialog
+                        AlertDialog.Builder builderTextSize = BuilderThemeInit.init(getContext());
+                        builderTextSize.setView(constraintLayout)
+                                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialogInterface, int i) {
+
+                                    }
+                                }).setPositiveButton("Set", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialogInterface, int i) {
+                                        editor.putInt(getString(R.string.text_size), numberPicker.getValue());
+                                        editor.apply();
+                                    }
+                                });
+                        AlertDialog alertDialog = builderTextSize.create();
                         alertDialog.show();
-                        textSize = sharedPreferences.getInt(getString(R.string.text_size), 20);
-
-                        numberPicker = constraintLayout.findViewById(R.id.number_picker_dialog);
-                        textView = constraintLayout.findViewById(R.id.text_example_dialog);
-                        buttonCancel = constraintLayout.findViewById(R.id.button_cancel_dialog);
-                        buttonSet = constraintLayout.findViewById(R.id.button_set_dialog);
-
-                        textView.setTextSize(textSize);
-
-                        numberPicker.setMinValue(10);
-                        numberPicker.setMaxValue(50);
-                        numberPicker.setValue(textSize);
-                        numberPicker.setOnValueChangedListener(new NumberPicker.OnValueChangeListener() {
-                            @Override
-                            public void onValueChange(NumberPicker numberPicker, int i, int i1) {
-                                textView.setTextSize(numberPicker.getValue());
-                            }
-                        });
-
-                        buttonCancel.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View view) {
-                                alertDialog.dismiss();
-                            }
-                        });
-                        buttonSet.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View view) {
-                                editor.putInt(getString(R.string.text_size), numberPicker.getValue());
-                                editor.apply();
-                                alertDialog.dismiss();
-                            }
-                        });
                         break;
-                    case 1: // light theme
-                    case 2: // editable
+                    case 1: // Light theme
+                    case 2: // Editable
                         boolean isChecked = ((SettingListViewItem) settingListViewAdapter.getItem(position)).getSwitchChecked();
                         ((SettingListViewItem) settingListViewAdapter.getItem(position)).setSwitchChecked(!isChecked);
                         settingListViewAdapter.notifyDataSetChanged();
@@ -142,7 +120,7 @@ public class SettingFragment extends Fragment {
             }
         });
 
-        setTheme(presentTheme, listView);
+        setTheme(theme, listView);
 
         return root;
     }

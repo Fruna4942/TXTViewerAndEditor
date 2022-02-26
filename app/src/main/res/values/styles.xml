@@ -5,8 +5,49 @@
         <item name="android:layout_height">1dp</item>
         <item name="android:background">?android:attr/listDivider</item>
     </style>
-    <style name="testStyle">
-        <item name="itemTextColor">#FFFFFFFF</item>
-        <item name="android:textColor">#FFFFFFFF</item> // replace this value with your desired menu item color.
+
+
+    <style name="AlertDialogThemeLight" parent="ThemeOverlay.AppCompat.Dialog.Alert">
+        <item name="android:background">@color/white</item>
+        <item name="android:textColor">@color/text_color_light</item>
+        <item name="android:textColorPrimary">@color/text_color_light</item>
+        <item name="android:textColorAlertDialogListItem">@color/text_color_light</item>
+        <item name="android:buttonBarNeutralButtonStyle">@style/NeutralButtonStyleLight</item>
+        <item name="android:buttonBarNegativeButtonStyle">@style/NegativeButtonStyleLight</item>
+        <item name="android:buttonBarPositiveButtonStyle">@style/PositiveButtonStyleLight</item>
+    </style>
+
+    <style name="NeutralButtonStyleLight" parent="Widget.AppCompat.Button.ButtonBar.AlertDialog">
+        <item name="android:textColor">@color/black</item>
+    </style>
+    <style name="NegativeButtonStyleLight" parent="Widget.AppCompat.Button.ButtonBar.AlertDialog">
+        <item name="android:textColor">@color/black</item>
+    </style>
+    <style name="PositiveButtonStyleLight" parent="Widget.AppCompat.Button.ButtonBar.AlertDialog">
+        <item name="android:textColor">@color/black</item>
+    </style>
+
+
+    <style name="AlertDialogThemeDark" parent="ThemeOverlay.MaterialComponents.Dialog.Alert">
+        <item name="android:background">#FF424242</item>
+        <item name="android:textColor">@color/text_color_dark</item>
+        <item name="android:textColorPrimary">@color/text_color_dark</item>
+        <item name="android:textColorAlertDialogListItem">@color/text_color_dark</item>
+        <item name="android:buttonBarNeutralButtonStyle">@style/NeutralButtonStyleDark</item>
+        <item name="android:buttonBarNegativeButtonStyle">@style/NegativeButtonStyleDark</item>
+        <item name="android:buttonBarPositiveButtonStyle">@style/PositiveButtonStyleDark</item>
+    </style>
+
+    <style name="NeutralButtonStyleDark" parent="Widget.AppCompat.Button.ButtonBar.AlertDialog">
+        <item name="android:textColor">@color/white</item>
+    </style>
+    <style name="NegativeButtonStyleDark" parent="Widget.AppCompat.Button.ButtonBar.AlertDialog">
+        <item name="android:textColor">@color/white</item>
+    </style>
+    <style name="PositiveButtonStyleDark" parent="Widget.AppCompat.Button.ButtonBar.AlertDialog">
+        <item name="android:textColor">@color/white</item>
+    </style>
+    <style name="test" parent="Widget.AppCompat.TextView">
+        <item name="android:textColor">@color/white</item>
     </style>
 </resources>

@@ -1,6 +1,7 @@
 package com.toyproject.txtviewerandeditor;
 
 import android.Manifest;
+import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -13,7 +14,6 @@ import android.os.Environment;
 import android.provider.Settings;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.appcompat.widget.Toolbar;
@@ -30,12 +30,15 @@ import androidx.navigation.ui.NavigationUI;
 import com.google.android.material.navigation.NavigationView;
 import com.toyproject.txtviewerandeditor.databinding.ActivityMainBinding;
 import com.toyproject.txtviewerandeditor.databinding.ContentMainBinding;
+import com.toyproject.txtviewerandeditor.moduel.dialog_layout_manager.BuilderThemeInit;
 
 // TODO: 2022-02-17 테마 다듬기 
 public class MainActivity extends AppCompatActivity {
 
     private AppBarConfiguration mAppBarConfiguration;
     private ActivityMainBinding binding;
+
+    String theme;
 
     ContentMainBinding contentMainBinding;
     ConstraintLayout constraintLayout;
@@ -46,11 +49,11 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         SharedPreferences sharedPreferences = getSharedPreferences(getString(R.string.preference_file_key), Context.MODE_PRIVATE);
-        String presentTheme = initTheme(sharedPreferences.getString(getString(R.string.theme), null), sharedPreferences.edit());
+        theme = initTheme(sharedPreferences.getString(getString(R.string.theme), null), sharedPreferences.edit());
 
         // Dark Theme 을 지원하는 버전이면  Activity 시작 전 Theme 변경 후 재시작
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q)
-            setThemeFromAPI29(presentTheme);
+            setThemeFromAPI29(theme);
 
         super.onCreate(savedInstanceState);
 
@@ -65,7 +68,7 @@ public class MainActivity extends AppCompatActivity {
         toolbar = binding.appBarMain.toolbar;
 
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
-            setThemeUnderAPI29(presentTheme);
+            setThemeUnderAPI29(theme);
         }
 
         // Passing each menu ID as a set of Ids because each
@@ -103,7 +106,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        // NavigationDrawer가 열려있다면 BackButton이 눌렸을 때 닫음
+        // NavigationDrawer 가 열려있다면 BackButton 이 눌렸을 때 닫음
         if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
             drawerLayout.closeDrawers();
         } else {
@@ -145,8 +148,8 @@ public class MainActivity extends AppCompatActivity {
             }
         });
         */
-        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
-        AlertDialog alertDialog;
+        // 권한 획득이 필요함을 안내하는 AlertDialog
+        android.app.AlertDialog.Builder builder = BuilderThemeInit.init(this);
         builder.setTitle("Need permission!")
                 .setMessage("Need all file access permission to open txt files.");
         builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
@@ -171,30 +174,30 @@ public class MainActivity extends AppCompatActivity {
             }
         });
         builder.setCancelable(false);
-        alertDialog = builder.create();
+        android.app.AlertDialog alertDialog = builder.create();
         alertDialog.show();
     }
 
     public void popUpAlertDialogCantUseWithoutPermission() {
-            AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
-            AlertDialog alertDialog;
-            builder.setTitle("Need Permission!")
-                    .setMessage("You choose 'Don't ask again'.\n" +
-                            "You can't use this application without 'all file access' permission.\n" +
-                            "To use this application, please go to 'Settings>>Apps>>txtViewerAndEditor' and allow the permission.");
-            builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialogInterface, int i) {
-                    finishAffinity();
-                /*
-                System.runFinalization();
-                System.exit(0);
-                 */
-                }
-            });
-            builder.setCancelable(false);
-            alertDialog = builder.create();
-            alertDialog.show();
+        // 'Don't ask again' 을 선택하고 권한 Deny 시 권한없인 어플 사용 불가함을 안내하는 AlertDialog
+        android.app.AlertDialog.Builder builder = BuilderThemeInit.init(this);
+        builder.setTitle("Need Permission!")
+                .setMessage("You choose 'Don't ask again'.\n" +
+                        "You can't use this application without 'all file access' permission.\n" +
+                        "To use this application, please go to 'Settings>>Apps>>txtViewerAndEditor' and allow the permission.");
+        builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                finishAffinity();
+            /*
+            System.runFinalization();
+            System.exit(0);
+             */
+            }
+        });
+        builder.setCancelable(false);
+        AlertDialog alertDialog = builder.create();
+        alertDialog.show();
     }
 
     public String initTheme(String presentTheme, SharedPreferences.Editor editor) {
@@ -217,19 +220,25 @@ public class MainActivity extends AppCompatActivity {
     }
     public void setThemeUnderAPI29(String presentTheme) {
         if (presentTheme.equals(getString(R.string.theme_dark))) {
-            toolbar.setBackgroundColor(getColor(R.color.primary_dark));
-            constraintLayout.setBackgroundColor(getColor(R.color.background_dark));
             getWindow().setStatusBarColor(getColor(R.color.primary_variant_dark));
-            navigationView.setBackgroundColor(getColor(R.color.background_dark));
+
+            toolbar.setBackgroundColor(getColor(R.color.primary_dark));
+
+            constraintLayout.setBackgroundColor(getColor(R.color.background_dark));
+
+            navigationView.setBackgroundColor(getColor(R.color.nav_background_dark));
             navigationView.setItemTextColor(getColorStateList(R.color.color_state_list_dark));
             navigationView.setItemIconTintList(getColorStateList(R.color.color_state_list_dark));
             navigationView.setItemBackground(getDrawable(R.drawable.nav_view_item_background_dark));
             //setTheme(R.style.Theme_Dark_TxtViewerAndEditor);
         } else if (presentTheme.equals(getString(R.string.theme_light))) {
-            toolbar.setBackgroundColor(getColor(R.color.primary_light));
-            constraintLayout.setBackgroundColor(getColor(R.color.background_light));
             getWindow().setStatusBarColor(getColor(R.color.primary_variant_light));
-            navigationView.setBackgroundColor(getColor(R.color.background_light));
+
+            toolbar.setBackgroundColor(getColor(R.color.primary_light));
+
+            constraintLayout.setBackgroundColor(getColor(R.color.background_light));
+
+            navigationView.setBackgroundColor(getColor(R.color.nav_background_light));
             navigationView.setItemTextColor(getColorStateList(R.color.color_state_list_light));
             navigationView.setItemIconTintList(getColorStateList(R.color.color_state_list_light));
             navigationView.setItemBackground(getDrawable(R.drawable.nav_view_item_background_light));

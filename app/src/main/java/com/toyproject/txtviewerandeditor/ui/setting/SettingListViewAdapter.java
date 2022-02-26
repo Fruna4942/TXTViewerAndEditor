@@ -69,7 +69,8 @@ public class SettingListViewAdapter extends BaseAdapter {
             SharedPreferences.Editor editor = sharedPreferences.edit();
 
             switch (position) {
-                case 1: // light theme switch
+                case 1: // Light theme switch
+                    // Switch Check 상태에 따라 SharedPreference 의 Theme 을 변경
                     sw.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                         @Override
                         public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
@@ -77,18 +78,17 @@ public class SettingListViewAdapter extends BaseAdapter {
                                 editor.putString(context.getString(R.string.theme), context.getString(R.string.theme_light));
                                 editor.apply();
                                 ActivityCompat.recreate((Activity) context);
-                                //AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
                             }
                             else {
                                 editor.putString(context.getString(R.string.theme), context.getString(R.string.theme_dark));
                                 editor.apply();
                                 ActivityCompat.recreate((Activity) context);
-                                //AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
                             }
                         }
                     });
                     break;
-                case 2: // edit switch
+                case 2: // Edit switch
+                    // Switch Check 상태에 따라 SharedPreference 의 Editable 을 변경
                     sw.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                         @Override
                         public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
