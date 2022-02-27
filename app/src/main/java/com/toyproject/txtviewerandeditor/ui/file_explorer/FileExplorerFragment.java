@@ -147,7 +147,6 @@ public class FileExplorerFragment extends Fragment {
         LayoutInflater layoutInflater = requireActivity().getLayoutInflater();
         OneInputAlertDialogLayout oneInputAlertDialogLayout = new OneInputAlertDialogLayout(layoutInflater);
         SharedPreferences sharedPreferences = getActivity().getSharedPreferences(getString(R.string.preference_file_key), Context.MODE_PRIVATE);
-        String theme = sharedPreferences.getString(getString(R.string.theme), getString(R.string.theme_dark));
 
         oneInputAlertDialogLayout.setTheme(getContext());
         oneInputAlertDialogLayout.setFocus(true);

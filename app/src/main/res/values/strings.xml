@@ -2,7 +2,7 @@
     <string name="app_name">txtViewerAndEditor</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
-    <string name="nav_header_title">Android Studio</string>
+    <string name="nav_header_title">Text Viewer And Editor</string>
     <string name="nav_header_subtitle">android.studio@android.com</string>
     <string name="nav_header_desc">Navigation header</string>
     <string name="action_settings">Settings</string>
@@ -31,4 +31,10 @@
     <string name="new_folder_name">Folder name</string>
 
     <string name="rename">Rename</string>
+
+    <string name="get_permission_title">Need Permission!</string>
+    <string name="get_permission_message">Need all file access permission to open txt files.</string>
+
+    <string name="cant_use_without_permission_title">Need Permission!</string>
+    <string name="cant_use_without_permission_message">You choose \'Don\'t ask again\'.\nYou can\'t use this application without \'all file access\' permission.\nTo use this application, please go to \'Settings>>Apps>>txtViewerAndEditor\' and allow the permission.</string>
 </resources>

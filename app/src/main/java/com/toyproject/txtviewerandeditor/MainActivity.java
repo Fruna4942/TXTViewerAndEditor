@@ -12,6 +12,8 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.Settings;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -150,8 +152,8 @@ public class MainActivity extends AppCompatActivity {
         */
         // 권한 획득이 필요함을 안내하는 AlertDialog
         android.app.AlertDialog.Builder builder = BuilderThemeInit.init(this);
-        builder.setTitle("Need permission!")
-                .setMessage("Need all file access permission to open txt files.");
+        builder.setTitle(getString(R.string.get_permission_title))
+                .setMessage(getString(R.string.get_permission_message));
         builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
@@ -181,10 +183,8 @@ public class MainActivity extends AppCompatActivity {
     public void popUpAlertDialogCantUseWithoutPermission() {
         // 'Don't ask again' 을 선택하고 권한 Deny 시 권한없인 어플 사용 불가함을 안내하는 AlertDialog
         android.app.AlertDialog.Builder builder = BuilderThemeInit.init(this);
-        builder.setTitle("Need Permission!")
-                .setMessage("You choose 'Don't ask again'.\n" +
-                        "You can't use this application without 'all file access' permission.\n" +
-                        "To use this application, please go to 'Settings>>Apps>>txtViewerAndEditor' and allow the permission.");
+        builder.setTitle(getString(R.string.cant_use_without_permission_title))
+                .setMessage(getString(R.string.cant_use_without_permission_message));
         builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {

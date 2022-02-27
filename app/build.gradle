@@ -1,6 +1,7 @@
 plugins {
     id 'com.android.application'
     id 'androidx.navigation.safeargs'
+    id 'com.google.android.gms.oss-licenses-plugin'
 }
 
 android {
@@ -56,7 +57,9 @@ dependencies {
     // https://mvnrepository.com/artifact/com.googlecode.juniversalchardet/juniversalchardet
     implementation 'com.googlecode.juniversalchardet:juniversalchardet:1.0.3'
 
-// https://mvnrepository.com/artifact/commons-io/commons-io
+    // https://mvnrepository.com/artifact/commons-io/commons-io
     implementation 'commons-io:commons-io:2.5'
 
+    // https://developers.google.com/android/guides/opensource#groovy-dsl
+    implementation 'com.google.android.gms:play-services-oss-licenses:17.0.0'
 }
