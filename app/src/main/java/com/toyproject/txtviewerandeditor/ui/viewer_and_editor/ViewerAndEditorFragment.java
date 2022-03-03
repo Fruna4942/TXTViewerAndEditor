@@ -201,15 +201,14 @@ public class ViewerAndEditorFragment extends Fragment {
 
                     // 저장을 안내하는 AlertDialog
                     AlertDialog.Builder builder = BuilderThemeInit.init(getContext());
-                    builder.setTitle("Changes are made")
-                            .setMessage("Do you want to save changes?\n" +
-                                    "If you choose \"Don't Save\", the data you changed will be lost.")
-                            .setNegativeButton("Don't Save", new DialogInterface.OnClickListener() {
+                    builder.setTitle(R.string.changes_are_made_title)
+                            .setMessage(getString(R.string.changes_are_made_message))
+                            .setNegativeButton(getString(R.string.dont_save), new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialogInterface, int i) {
 
                                 }
-                            }).setPositiveButton("Save", new DialogInterface.OnClickListener() {
+                            }).setPositiveButton(getString(R.string.save), new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialogInterface, int i) {
                                     String text;
@@ -227,7 +226,7 @@ public class ViewerAndEditorFragment extends Fragment {
                                         e.printStackTrace();
                                     }
                                 }
-                            }).setNeutralButton("Cancel", new DialogInterface.OnClickListener() {
+                            }).setNeutralButton(getString(R.string.cancel), new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialogInterface, int i) {
                                     if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
@@ -274,7 +273,7 @@ public class ViewerAndEditorFragment extends Fragment {
 
     private void setTextPleaseSelect(TextView textView) {
         textView.setGravity(Gravity.CENTER);
-        textView.setText("Please select txt file");
+        textView.setText(getString(R.string.please_select_txt_file));
         textView.setTextSize(25);
     }
 

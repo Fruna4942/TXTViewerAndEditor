@@ -65,10 +65,10 @@ public class SettingFragment extends Fragment {
         editable = sharedPreferences.getBoolean(getString(R.string.editable), false);
 
         ArrayList<SettingListViewItem> settingListViewItemArrayList = new ArrayList<SettingListViewItem>();
-        settingListViewItemArrayList.add(new SettingListViewItem("Text size", false, false));
-        settingListViewItemArrayList.add(new SettingListViewItem("Light theme", theme.equals(getString(R.string.theme_light)), true));
-        settingListViewItemArrayList.add(new SettingListViewItem("Editable", editable, true));
-        settingListViewItemArrayList.add(new SettingListViewItem("Info", false, false));
+        settingListViewItemArrayList.add(new SettingListViewItem(getString(R.string.setting_text_size), false, false));
+        settingListViewItemArrayList.add(new SettingListViewItem(getString(R.string.setting_light_theme), theme.equals(getString(R.string.theme_light)), true));
+        settingListViewItemArrayList.add(new SettingListViewItem(getString(R.string.setting_editable), editable, true));
+        settingListViewItemArrayList.add(new SettingListViewItem(getString(R.string.setting_info), false, false));
 
 
         settingListViewAdapter = new SettingListViewAdapter(settingListViewItemArrayList);
@@ -95,12 +95,12 @@ public class SettingFragment extends Fragment {
                         // Text size 를 선택하는 AlertDialog
                         AlertDialog.Builder builderTextSize = BuilderThemeInit.init(getContext());
                         builderTextSize.setView(constraintLayout)
-                                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                                .setNegativeButton(getString(R.string.cancel), new DialogInterface.OnClickListener() {
                                     @Override
                                     public void onClick(DialogInterface dialogInterface, int i) {
 
                                     }
-                                }).setPositiveButton("Set", new DialogInterface.OnClickListener() {
+                                }).setPositiveButton(getString(R.string.set), new DialogInterface.OnClickListener() {
                                     @Override
                                     public void onClick(DialogInterface dialogInterface, int i) {
                                         editor.putInt(getString(R.string.text_size), numberPicker.getValue());

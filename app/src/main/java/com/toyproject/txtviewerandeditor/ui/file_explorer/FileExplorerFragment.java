@@ -160,12 +160,12 @@ public class FileExplorerFragment extends Fragment {
                 // 새로운 Text 파일의 이름을 입력받는 AlertDialog
                 AlertDialog.Builder builderAddFile = BuilderThemeInit.init(getContext());
                 builderAddFile.setView(oneInputAlertDialogLayout.getConstraintLayout())
-                        .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                        .setNegativeButton(getString(R.string.cancel), new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
                             }
                         })
-                        .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                        .setPositiveButton(getString(R.string.ok), new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
                                 String presentPath = fileExplorerRecyclerViewAdapter.getDirectoryPath();
@@ -209,12 +209,12 @@ public class FileExplorerFragment extends Fragment {
                 // 새로운 디렉토리의 이름을 입력받는 AlertDialog
                 AlertDialog.Builder builderAddFolder = BuilderThemeInit.init(getContext());
                 builderAddFolder.setView(constraintLayoutAddFolder)
-                        .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                        .setNegativeButton(getString(R.string.cancel), new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
                             }
                         })
-                        .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                        .setPositiveButton(getString(R.string.ok), new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
                                 String presentPath = fileExplorerRecyclerViewAdapter.getDirectoryPath();

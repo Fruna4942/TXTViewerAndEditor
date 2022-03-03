@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">txtViewerAndEditor</string>
+    <string name="nav_header_title">Text Viewer And Editor</string>
+    <string name="nav_header_desc">Navigation header</string>
+    <string name="action_settings">Settings</string>
+
+
+    <!-- UI text -->
+    <!-- Public -->
+    <string name="ok">확인</string>
+    <string name="set">설정</string>
+    <string name="no">아니요</string>
+    <string name="cancel">취소</string>
+    <string name="dont_save">저장 안 함</string>
+    <string name="save">저장</string>
+
+    <!-- Main -->
+    <string name="get_permission_title">권한이 필요합니다!</string>
+    <string name="get_permission_message">txt 파일을 열람 및 편집 하기 위해 저장공간 접근 권한이 필요합니다.</string>
+    <string name="cant_use_without_permission_title">권한이 필요합니다!</string>
+    <string name="cant_use_without_permission_message">\'다시 묻지 않음\'을 선택하셨습니다.\n앱 사용을 위해 앱 설정에 가셔서 저장공간 접근 권한을 허용해주세요.</string>
+
+    <!-- Navigation View -->
+    <string name="menu_viewer_and_editor">View &amp; Edit</string>
+    <string name="menu_file_explorer">Find txt file</string>
+    <string name="menu_setting">Setting</string>
+
+    <!-- Viewer And Editor -->
+    <string name="changes_are_made_title">변경사항이 있습니다!</string>
+    <string name="changes_are_made_message">변경 내용을 저장하시겠습니까?\n\"저장 안 함\"을 선택하시면, 변경하신 내용이 사라집니다.</string>
+    <string name="please_select_txt_file">txt 파일을 선택해주세요</string>
+
+    <!-- File Explorer -->
+    <string name="new_text_file">새 텍스트 문서</string>
+    <string name="new_file_name">파일 이름</string>
+    <string name="new_folder">새 폴더</string>
+    <string name="new_folder_name">폴더 이름</string>
+    <string name="rename">이름 바꾸기</string>
+    <string name="delete">삭제</string>
+    <string name="delete_directory_message">\'%1$s\' 폴더와 폴더에 포함된 콘텐츠를 삭제하시겠습니까?</string>
+    <string name="delete_file_message">\'%1$s\' 을(를) 삭제하시겠습니까??</string>
+
+    <!-- Setting -->
+    <string name="setting_text_size">글자 크기</string>
+    <string name="setting_light_theme">밝은 테마</string>
+    <string name="setting_editable">편집 여부</string>
+    <string name="setting_info">정보</string>
+    <string name="text_size_example">가야 할 때가 언제인가를 분명히 알고 가는 이의 뒷모습은 얼마나 아름다운가.</string>
+</resources>

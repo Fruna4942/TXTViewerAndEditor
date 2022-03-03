@@ -1,18 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">txtViewerAndEditor</string>
     <string name="nav_header_title">Text Viewer And Editor</string>
     <string name="nav_header_desc">Navigation header</string>
     <string name="action_settings">Settings</string>
-
-
-    <!-- Shared Preference -->
-    <string name="preference_file_key" translatable="false">com.toyproject.txtviewerandeditor</string>
-    <string name="file_path" translatable="false">FilePath</string>
-    <string name="text_size" translatable="false">TextSize</string>
-    <string name="theme" translatable="false">Theme</string>
-    <string name="theme_dark" translatable="false">DarkTheme</string>
-    <string name="theme_light" translatable="false">LightTheme</string>
-    <string name="editable" translatable="false">Editable</string>
 
 
     <!-- UI text -->

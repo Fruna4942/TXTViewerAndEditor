@@ -12,8 +12,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.Settings;
-import android.widget.LinearLayout;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -154,7 +152,7 @@ public class MainActivity extends AppCompatActivity {
         android.app.AlertDialog.Builder builder = BuilderThemeInit.init(this);
         builder.setTitle(getString(R.string.get_permission_title))
                 .setMessage(getString(R.string.get_permission_message));
-        builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
+        builder.setNegativeButton(getString(R.string.no), new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
                 finishAffinity();
@@ -164,7 +162,7 @@ public class MainActivity extends AppCompatActivity {
                  */
             }
         });
-        builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+        builder.setPositiveButton(getString(R.string.ok), new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
                 if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.R) {
@@ -185,7 +183,7 @@ public class MainActivity extends AppCompatActivity {
         android.app.AlertDialog.Builder builder = BuilderThemeInit.init(this);
         builder.setTitle(getString(R.string.cant_use_without_permission_title))
                 .setMessage(getString(R.string.cant_use_without_permission_message));
-        builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+        builder.setPositiveButton(getString(R.string.ok), new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
                 finishAffinity();
@@ -227,9 +225,10 @@ public class MainActivity extends AppCompatActivity {
             constraintLayout.setBackgroundColor(getColor(R.color.background_dark));
 
             navigationView.setBackgroundColor(getColor(R.color.nav_background_dark));
-            navigationView.setItemTextColor(getColorStateList(R.color.color_state_list_dark));
-            navigationView.setItemIconTintList(getColorStateList(R.color.color_state_list_dark));
+            navigationView.setItemTextColor(getColorStateList(R.color.text_color_dark));
+            navigationView.setItemIconTintList(getColorStateList(R.color.icon_color_dark));
             navigationView.setItemBackground(getDrawable(R.drawable.nav_view_item_background_dark));
+
             //setTheme(R.style.Theme_Dark_TxtViewerAndEditor);
         } else if (presentTheme.equals(getString(R.string.theme_light))) {
             getWindow().setStatusBarColor(getColor(R.color.primary_variant_light));
@@ -239,9 +238,10 @@ public class MainActivity extends AppCompatActivity {
             constraintLayout.setBackgroundColor(getColor(R.color.background_light));
 
             navigationView.setBackgroundColor(getColor(R.color.nav_background_light));
-            navigationView.setItemTextColor(getColorStateList(R.color.color_state_list_light));
-            navigationView.setItemIconTintList(getColorStateList(R.color.color_state_list_light));
+            navigationView.setItemTextColor(getColorStateList(R.color.text_color_light));
+            navigationView.setItemIconTintList(getColorStateList(R.color.icon_color_light));
             navigationView.setItemBackground(getDrawable(R.drawable.nav_view_item_background_light));
+
             //setTheme(R.style.Theme_Light_TxtViewerAndEditor);
         }
     }

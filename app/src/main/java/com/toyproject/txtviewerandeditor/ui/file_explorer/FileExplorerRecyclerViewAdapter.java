@@ -120,12 +120,12 @@ public class FileExplorerRecyclerViewAdapter extends RecyclerView.Adapter<FileEx
                                             // Rename 될 이름을 입력받는 AlertDialog
                                             AlertDialog.Builder builderRename = BuilderThemeInit.init(context);
                                             builderRename.setView(constraintLayoutRename)
-                                                    .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                                                    .setNegativeButton(context.getString(R.string.cancel), new DialogInterface.OnClickListener() {
                                                         @Override
                                                         public void onClick(DialogInterface dialogInterface, int i) {
 
                                                         }
-                                                    }).setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                                                    }).setPositiveButton(context.getString(R.string.ok), new DialogInterface.OnClickListener() {
                                                         @Override
                                                         public void onClick(DialogInterface dialogInterface, int i) {
                                                             String rename = editTextRename.getText().toString();
@@ -163,16 +163,16 @@ public class FileExplorerRecyclerViewAdapter extends RecyclerView.Adapter<FileEx
                                             // Delete 에 대해 확인을 안내하는 AlertDialog
                                             AlertDialog.Builder builderDelete = BuilderThemeInit.init(context);
                                             if (file.isDirectory()) {
-                                                builderDelete.setMessage("Delete folder \"" + fileName + "\" and its contents?");
+                                                builderDelete.setMessage(context.getString(R.string.delete_directory_message, fileName));
                                             } else {
-                                                builderDelete.setMessage("Delete \"" + fileName + "\"?");
+                                                builderDelete.setMessage(context.getString(R.string.delete_file_message, fileName));
                                             }
-                                            builderDelete.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                                            builderDelete.setNegativeButton(context.getString(R.string.cancel), new DialogInterface.OnClickListener() {
                                                 @Override
                                                 public void onClick(DialogInterface dialogInterface, int i) {
 
                                                 }
-                                            }).setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                                            }).setPositiveButton(context.getString(R.string.ok), new DialogInterface.OnClickListener() {
                                                 @Override
                                                 public void onClick(DialogInterface dialogInterface, int i) {
                                                     try {
